@@ -1,5 +1,6 @@
 install.packages(c("usethis", "gitcreds"))
 usethis::create_github_token()
 gitcreds::gitcreds_set()
+usethis::use_git_config(user.name = "Simon Busemeyer", user.email = "simonbusemeyer@gmail.com")
 usethis::use_git()
 usethis::use_github()
