@@ -53,10 +53,11 @@ legend("bottomleft", legend = c("X = 0", "X = 1"),
 
 # 2. cox validation
 cox_model <- coxph(Surv(observed_time, status) ~ X, data=sim_df)
+exp(coef(cox_model))
 summary(cox_model)
 
 
 # 3. proportion of events (1) vs censored obs (0)
 print(round(prop.table(table(sim_df$status)), 2))
-
+table(sim_df$X, sim_df$status)
 
