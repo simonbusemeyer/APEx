@@ -33,8 +33,30 @@ borne_a <- 1
   # Standardize the age (Z-score calculation) for numerical stability in regression models
   ageStand <- (age - ageMoyen) / sd(age)
   
-  hist(age)
-  hist(ageStand)
+  par(mfrow = c(1, 2), mar = c(5, 4, 4, 2) + 0.1)
+  
+  # Histogram 1: Raw Age Distribution
+  hist(age, 
+       breaks = 40, 
+       col = "darkslategray3", 
+       border = "white",
+       main = "Raw Age Distribution\n(Mixed Uniform Cohorts)", 
+       xlab = "Age (Years)", 
+       ylab = "Frequency")
+  abline(v = ageMoyen, col = "firebrick", lwd = 2, lty = 2) # Mark the sample mean
+  text(ageMoyen - 2, n*0.02, paste("Mean:", round(ageMoyen, 1)), col = "firebrick", pos = 2)
+  
+  # Histogram 2: Standardized Age Distribution
+  hist(ageStand, 
+       breaks = 40, 
+       col = "coral1", 
+       border = "white",
+       main = "Standardized Age Distribution\n(Z-score Scaled)", 
+       xlab = "Z-score Value", 
+       ylab = "Frequency")
+  abline(v = 0, col = "darkblue", lwd = 2, lty = 2) # Mark Z-score mean (0)
+  
+  
   
   # Generate n random uniform values (0 to 1) for sex assignment (though unused directly below)
   uSex <- runif(n)

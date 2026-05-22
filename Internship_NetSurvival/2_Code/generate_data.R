@@ -6,14 +6,11 @@
 generate_data <- function(k, pho, alpha, n, max_time, prop_female, prop_x0, year.start_min, year.start_max, beta_sex, beta_age, beta_X, borne_a) {
   # Covariables generation
   age_1 <- runif(n * .25, min = 30, max = 65)
-  #first uniform tranche vector
   age_2 <- runif(n * .35, min = 65, max = 75)
-  #second uniform tranche vector
   age_3 <- runif(n * .40, min = 75, max = 80)
-  #third uniform tranche vector
-  age <- c(age_1, age_2, age_3) #concatenates vectors for a single age distribution
-  ageMoyen <- mean(age) #obtains average age of the generation
-  ageStand <- (age - ageMoyen) / sd(age) #returns a vector or corresponding ages as z-scores
+  age <- c(age_1, age_2, age_3)
+  ageMoyen <- mean(age)
+  ageStand <- (age - ageMoyen) / sd(age)
   
   uSex <- runif(n)
   pFem <- prop_female
@@ -36,7 +33,7 @@ generate_data <- function(k, pho, alpha, n, max_time, prop_female, prop_x0, year
   exp.betaz <- exp(
     beta_sex * sex + beta_age * ageStand + beta_X * X
   )
-
+  
   ui <- runif(n)
   tpsSpe <- 1 / pho * (alpha * ((1 / (1 - ui))^(1 / (alpha * exp.betaz)) - 1))^(1 / k) 
   
