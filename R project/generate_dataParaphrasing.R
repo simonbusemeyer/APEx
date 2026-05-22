@@ -51,7 +51,7 @@ sex  <- rbinom(n, size = 1, prob = prop_female)
 uX   <- runif(n)
 X    <- rbinom(n, size = 1, prob = 1 - prop_x0)   
 
-# continuous enrollement?
+# year of diagnosis
 if (year.start_min != year.start_max) {
   year.start <- as.Date(paste0(sample(year.start_min:year.start_max, n, replace = TRUE), "-01-01")) +
     sample(0:364, n, replace = TRUE)
@@ -115,7 +115,7 @@ f1 <- function(i){
       i.age <- min(i.age + 1, max.i.age) 
       i.year <- min(i.year + 1, max.i.year) 
       
-      # iterate for the next year
+      # iterate for the next year, updated age
       uAtt <- runif(1)
       TauxAtt[i] <- 1-exp(-365.24*survexp.usr[i.age,i.sex, i.race, i.year])
     }
