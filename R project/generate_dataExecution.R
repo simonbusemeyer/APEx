@@ -4,8 +4,8 @@ library(relsurv)
 set.seed(12345)
 
 params <- list(
-  lambda         = 0.05,   # Baseline excess hazard
-  age_option     = "B",    # Age distribution option
+  lambda         = 0.01,   # Baseline excess hazard
+  age_option     = "A",    # Age distribution option
   n              = 10000,  # Number of patients to simulate
   max_time       = 5,      # Administrative censoring at 5 years
   prop_female    = 0.5,    # 50% women in the dataset
@@ -78,3 +78,27 @@ legend("bottomright",
        lwd = c(2, 2), 
        lty = c(1, 2),
        bty = "n")
+
+# nessie
+#Create age groups
+breaks <- pretty(simulated_data$age, n = 5)
+simulated_data$agegr <- cut(simulated_data$age, breaks = breaks, include.lowest = TRUE)
+
+nessie_output <- nessie(
+  Surv(observed_time_days, status) ~ sex + agegr, 
+  data = simulated_data, 
+  ratetable = survexp.usr, 
+  times = seq(0, params$max_time, 1),
+  rmap = list(age = age_days, sex = sex, year = year_diagnosis)
+)
+
+print(nessie_output)
+
+# additional calculations
+total_deaths <- sum(simulated_data$status == 1)
+cancer_deaths <- sum(simulated_data$cause == 1)
+other_deaths <- sum(simulated_data$status == 1 & simulated_data$cause == 0)
+
+#proportions|dead
+prop_cancer_among_dead <- cancer_deaths / total_deaths
+prop_other_among_dead  <- other_deaths / total_deaths

@@ -132,6 +132,7 @@ generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0,
     year_diagnosis = year.start,
     observed_time = temps,
     status = statut, 
+    cause = cause,
     hypothetical_time = temps2,
     hypothetical_status = cause2,
     admin_cens = max_time
