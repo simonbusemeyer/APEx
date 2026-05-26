@@ -3,12 +3,22 @@
 # Fonctions de génération de données de survie
 # =============================================================================
 
-generate_data <- function(k, pho, alpha, n, max_time, prop_female, prop_x0, year.start_min, year.start_max, beta_sex, beta_age, beta_X, borne_a) {
+generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0, year.start_min, year.start_max, beta_sex, beta_age, beta_X, borne_a) {
+  
   # Covariables generation
-  age_1 <- runif(n * .25, min = 30, max = 65)
-  age_2 <- runif(n * .35, min = 65, max = 75)
-  age_3 <- runif(n * .40, min = 75, max = 80)
-  age <- c(age_1, age_2, age_3)
+  if (age_option == "A") {
+    # Option a: age ~ Uniform[85, 90]
+    age <- runif(n, min = 85, max = 90)
+  } else if (age_option == "B") {
+    # Option B: age ~ Normal(65, 10) truncated to [50, 85]
+    p_min <- pnorm(50, mean = 65, sd = 10)
+    p_max <- pnorm(85, mean = 65, sd = 10)
+    u_age <- runif(n, min = p_min, max = p_max)
+    age <- qnorm(u_age, mean = 65, sd = 10)
+  } else {
+    stop("age_option must be either 'A' or 'B'")
+  }
+  
   ageMoyen <- mean(age)
   ageStand <- (age - ageMoyen) / sd(age)
   
@@ -35,7 +45,7 @@ generate_data <- function(k, pho, alpha, n, max_time, prop_female, prop_x0, year
   )
   
   ui <- runif(n)
-  tpsSpe <- 1 / pho * (alpha * ((1 / (1 - ui))^(1 / (alpha * exp.betaz)) - 1))^(1 / k) 
+  tpsSpe <- -log(ui) / (lambda * exp.betaz) 
   
   # T_P generation
   tpsGene <- rep(0, n)
