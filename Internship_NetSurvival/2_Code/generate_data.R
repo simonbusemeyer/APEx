@@ -3,8 +3,18 @@
 # Fonctions de génération de données de survie
 # =============================================================================
 
-generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0, year.start_min, year.start_max, beta_sex, beta_age, beta_X, borne_a) {
-  
+generate_data <- function(lambda,
+                          age_option,
+                          n,
+                          max_time,
+                          prop_female,
+                          prop_x0,
+                          year.start_min,
+                          year.start_max,
+                          beta_sex,
+                          beta_age,
+                          beta_X,
+                          borne_a) {
   # Covariables generation
   if (age_option == "A") {
     # Option a: age ~ Uniform[85, 90]
@@ -31,7 +41,10 @@ generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0,
   
   
   if (year.start_min != year.start_max) {
-    year.start <- as.Date(paste0(sample(year.start_min:year.start_max, n, replace = TRUE), "-01-01")) +
+    year.start <- as.Date(paste0(
+      sample(year.start_min:year.start_max, n, replace = TRUE),
+      "-01-01"
+    )) +
       sample(0:364, n, replace = TRUE)
   } else {
     year.start <- as.Date(paste0(year.start_min, "-01-01")) +
@@ -40,12 +53,10 @@ generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0,
   
   # T_E generation
   tempuS <- runif(n)
-  exp.betaz <- exp(
-    beta_sex * sex + beta_age * ageStand + beta_X * X
-  )
+  exp.betaz <- exp(beta_sex * sex + beta_age * ageStand + beta_X * X)
   
   ui <- runif(n)
-  tpsSpe <- -log(ui) / (lambda * exp.betaz) 
+  tpsSpe <- -log(ui) / (lambda * exp.betaz)
   
   # T_P generation
   tpsGene <- rep(0, n)
@@ -54,7 +65,7 @@ generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0,
   Xrace <- ifelse(X == 0, "white", "black")
   
   
-  f1 <- function(i){
+  f1 <- function(i) {
     uAtt <- runif(1)
     
     i.age <- which(attr(survexp.usr, which = "dimnames")[[1]] == trunc(age[i]))
@@ -62,32 +73,33 @@ generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0,
     i.race <- which(attr(survexp.usr, which = "dimnames")[[3]] == Xrace[i])
     i.year <- which(attr(survexp.usr, which = "dimnames")[[4]] == format(year.start[i], "%Y"))
     
-    if(length(i.age) == 0 || length(i.sex) == 0 || length(i.year) == 0) {
+    if (length(i.age) == 0 ||
+        length(i.sex) == 0 || length(i.year) == 0) {
       return(NA)  # Retourner NA si indices invalides
     }
     
     max.i.age <- length(attributes(survexp.usr)$dimnames[[1]])
     max.i.year <- length(attributes(survexp.usr)$dimnames[[4]])
-    TauxAtt[i] <- 1-exp(-365.24*survexp.usr[i.age,i.sex, i.race, i.year])
+    TauxAtt[i] <- 1 - exp(-365.24 * survexp.usr[i.age, i.sex, i.race, i.year])
     
-    if(uAtt <= TauxAtt[i]){
+    if (uAtt <= TauxAtt[i]) {
       tpsG <- runif(1)
       tpsGene[i] <- tpsG
-    }else{
-      while(uAtt > TauxAtt[i]){
+    } else{
+      while (uAtt > TauxAtt[i]) {
         tpsGene[i] <- tpsGene[i] + 1
         i.age <- min(i.age + 1, max.i.age) # happy birthday !
         i.year <- min(i.year + 1, max.i.year) # and one calendar year more...
         
         uAtt <- runif(1)
-        TauxAtt[i] <- 1-exp(-365.24*survexp.usr[i.age,i.sex, i.race, i.year])
+        TauxAtt[i] <- 1 - exp(-365.24 * survexp.usr[i.age, i.sex, i.race, i.year])
       }
       tpsG <- runif(1)
       tpsGene[i] <- tpsGene[i] + tpsG
     }
     return(tpsGene[i])
   }
-  tpsGene <- sapply(1:n,f1)
+  tpsGene <- sapply(1:n, f1)
   
   tpsSurv <- pmin(tpsGene, tpsSpe)
   
@@ -95,7 +107,7 @@ generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0,
   borne_a = borne_a
   
   # censoring time
-  tpsCens <- runif(n, min=0, max=borne_a)
+  tpsCens <- runif(n, min = 0, max = borne_a)
   
   temps <- pmin(tpsCens, tpsSurv)
   temps2 <- pmin(tpsCens, tpsSpe)
@@ -124,14 +136,14 @@ generate_data <- function(lambda, age_option, n, max_time, prop_female, prop_x0,
     age = round(age, 1),
     ageStand = ageStand,
     sex_num = sex,
-    sex = factor(sexNom,  levels = c("male", "female")),
+    sex = factor(sexNom, levels = c("male", "female")),
     race = factor(Xrace, levels = c("white", "black")),
     race_num = X,
     tpsGene = tpsGene,
     tpsSpe = tpsSpe,
     year_diagnosis = year.start,
     observed_time = temps,
-    status = statut, 
+    status = statut,
     cause = cause,
     hypothetical_time = temps2,
     hypothetical_status = cause2,
