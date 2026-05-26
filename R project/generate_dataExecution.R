@@ -8,7 +8,7 @@ params <- list(
   # Baseline excess hazard
   age_option     = "A",
   # Age distribution option
-  n              = 10000,
+  n              = 1000,
   # Number of patients to simulate
   max_time       = 5,
   # Administrative censoring at 5 years
