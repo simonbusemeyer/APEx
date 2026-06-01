@@ -6,9 +6,9 @@ set.seed(12345)
 params <- list(
   lambda         = 0.03,
   # Baseline excess hazard
-  age_option     = "A",
+  age_option     = "B",
   # Age distribution option
-  n              = 10000,
+  n              = 2000,
   # Number of patients to simulate
   max_time       = 5,
   # Administrative censoring at 5 years
@@ -51,7 +51,7 @@ table(simulated_data$status)
 
 #distributions of age, sex, and X
 summary(simulated_data$age)
-hist(simulated_data$age)
+#hist(simulated_data$age)
 prop.table(table(simulated_data$sex))
 prop.table(table(simulated_data$race_num))
 
