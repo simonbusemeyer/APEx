@@ -8,7 +8,7 @@ params <- list(
   # Baseline excess hazard
   age_option     = "A",
   # Age distribution option
-  n              = 1000,
+  n              = 10000,
   # Number of patients to simulate
   max_time       = 5,
   # Administrative censoring at 5 years
@@ -86,7 +86,7 @@ plot(
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival",
   main = "Estimated vs Theoretical Net Survival",
-  ylim = c(0, 1)
+  ylim = c(0.8, 1)
 )
 
 lines(
@@ -123,7 +123,7 @@ nessie_output <- nessie(
   rmap = list(age = age_days, sex = sex, year = year_diagnosis)
 )
 
-print(nessie_output)
+# print(nessie_output)
 
 # additional calculations
 total_deaths <- sum(simulated_data$status == 1)
