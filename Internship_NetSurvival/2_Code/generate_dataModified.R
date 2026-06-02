@@ -15,18 +15,29 @@ generate_data <- function(lambda,
                           beta_age,
                           beta_X,
                           borne_a) {
-  # Covariables generation
+  
+  # Covariables generation: Age
   if (age_option == "A") {
-    # Option a: age ~ Uniform[85, 90]
-    age <- runif(n, min = 85, max = 90)
+    # Option A: age ~ Uniform[80, 90]
+    age <- runif(n, min = 80, max = 90)
+    
   } else if (age_option == "B") {
-    # Option B: age ~ Normal(65, 10) truncated to [50, 85]
-    p_min <- pnorm(50, mean = 65, sd = 10)
-    p_max <- pnorm(85, mean = 65, sd = 10)
-    u_age <- runif(n, min = p_min, max = p_max)
-    age <- qnorm(u_age, mean = 65, sd = 10)
+    # Option B: age ~ Beta(1,3) scaled to [80, 90]
+    # rbeta gives a value between 0 and 1. 
+    # Multiply by 10 (the range) and add 80 (the minimum).
+    age <- 80 + (10 * rbeta(n, shape1 = 1.1, shape2 = 2.2))
+    
+  } else if (age_option == "C") {
+    # Option C: age ~ Uniform[15, 39]
+    age <- runif(n, min = 15, max = 39)
+    
+  } else if (age_option == "D") {
+    # Option D: age ~ Uniform[50, 74]
+    age <- runif(n, min = 50, max = 74)
+    
   } else {
-    stop("age_option must be either 'A' or 'B'")
+    # Catch any invalid inputs
+    stop("age_option must be 'A', 'B', 'C', or 'D'")
   }
   
   ageMoyen <- mean(age)
@@ -139,6 +150,7 @@ generate_data <- function(lambda,
     sex = factor(sexNom, levels = c("male", "female")),
     race = factor(Xrace, levels = c("white", "black")),
     race_num = X,
+    tpsCens = tpsCens,
     tpsGene = tpsGene,
     tpsSpe = tpsSpe,
     year_diagnosis = year.start,

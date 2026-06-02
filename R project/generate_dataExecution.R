@@ -1,24 +1,24 @@
 library(survival)
 library(relsurv)
 
-set.seed(12345)
+#set.seed(12345)
 
 params <- list(
   lambda         = 0.03,
   # Baseline excess hazard
-  age_option     = "B",
+  age_option     = "A",
   # Age distribution option
   n              = 2000,
   # Number of patients to simulate
-  max_time       = 5,
+  max_time       = 10,
   # Administrative censoring at 5 years
   prop_female    = 0.5,
   # 50% women in the dataset
   prop_x0        = 0.5,
   # Proportion of X=0 in the dataset
-  year.start_min = 2000,
+  year.start_min = 2008,
   # Minimum diagnosis year
-  year.start_max = 2005,
+  year.start_max = 2010,
   # Maximum diagnosis year
   beta_sex       = -1.5,
   # Effect of sex on excess mortality
@@ -26,7 +26,7 @@ params <- list(
   # Effect of age on excess mortality
   beta_X         = 0.01,
   # Effect of binary covariate X on excess mortality
-  borne_a        = 6       # Maximum random censoring time (uniform[0, 6])
+  borne_a        = 15      # Maximum random censoring time (uniform[0, 6])
 )
 
 simulated_data <- generate_data(
@@ -51,7 +51,7 @@ table(simulated_data$status)
 
 #distributions of age, sex, and X
 summary(simulated_data$age)
-#hist(simulated_data$age)
+hist(simulated_data$age, breaks = 20)
 prop.table(table(simulated_data$sex))
 prop.table(table(simulated_data$race_num))
 
@@ -86,7 +86,7 @@ plot(
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival",
   main = "Estimated vs Theoretical Net Survival",
-  ylim = c(0.8, 1)
+  ylim = c(0.5, 1)
 )
 
 lines(
