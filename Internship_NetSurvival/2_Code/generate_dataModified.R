@@ -18,8 +18,8 @@ generate_data <- function(lambda,
   
   # Covariables generation: Age
   if (age_option == "A") {
-    # Option A: age ~ Uniform[80, 90]
-    age <- runif(n, min = 80, max = 90)
+    # Option A: age ~ Uniform[80, 89]
+    age <- runif(n, min = 80, max = 89)
     
   } else if (age_option == "B") {
     # Option B: age ~ Beta(1,3) scaled to [80, 90]

@@ -6,7 +6,7 @@ library(relsurv)
 params <- list(
   lambda         = 0.03,
   # Baseline excess hazard
-  age_option     = "A",
+  age_option     = "B",
   # Age distribution option
   n              = 2000,
   # Number of patients to simulate
@@ -86,7 +86,7 @@ plot(
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival",
   main = "Estimated vs Theoretical Net Survival",
-  ylim = c(0.5, 1)
+  ylim = c(0.8, 1)
 )
 
 lines(
