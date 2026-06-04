@@ -36,16 +36,16 @@ pp_pooled <- rs.surv(
 )
 
 # 4. Calculate the Pooled Kaplan-Meier Estimate (Hypothetical truth)
-km_pooled <- survfit(Surv(hypo_time_days, hypothetical_status) ~ 1, data = all_simulated_data)
+#km_pooled <- survfit(Surv(hypo_time_days, hypothetical_status) ~ 1, data = all_simulated_data)
 
 # 5. Set up the blank plot
 plot(
   0, type = "n",
   xlim = c(0, params$max_time),
-  ylim = c(0.7, 1), # Adjust this lower bound depending on your lambda
+  ylim = c(0.5, 1), # Adjust this lower bound depending on your lambda
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
-  main = paste("Net Survival: PP vs KM vs Theoretical (", N_sim, " runs)", sep="")
+main = paste("Net Survival: PP vs Theoretical (", N_sim, " runs) | Age ~ U(15-39) ", sep="")
 )
 grid()
 
@@ -69,7 +69,7 @@ for (i in 1:N_sim) {
 lines(pp_pooled$time / 365.241, pp_pooled$surv, col = "red", lwd = 3, type = "s")
 
 # 8. Overlay the Pooled Kaplan-Meier curve (in bold Green)
-lines(km_pooled$time / 365.241, km_pooled$surv, col = "green3", lwd = 3, type = "s")
+#lines(km_pooled$time / 365.241, km_pooled$surv, col = "green3", lwd = 3, type = "s")
 
 # 9. Overlay the Theoretical Excess Hazard curve (in bold dashed Black)
 lines(t_seq_years, surv_theo_mean, col = "black", lwd = 3, lty = 2)
@@ -80,10 +80,9 @@ legend(
   legend = c(
     "Individual PP Estimates", 
     "Pooled PP Estimate", 
-    "Pooled KM (Hypothetical)", 
     "Theoretical Survival Curve S(t) = exp(-lambda * t * exp(beta * Z)) "
   ),
-  col = c(rgb(0.2, 0.5, 0.8, alpha = 0.5), "red", "green3", "black"), 
+  col = c(rgb(0.2, 0.5, 0.8, alpha = 0.5), "red", "black"), 
   lwd = c(2, 3, 3, 3), 
   lty = c(1, 1, 1, 2), 
   bty = "n",

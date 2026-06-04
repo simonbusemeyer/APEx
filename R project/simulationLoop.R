@@ -5,10 +5,10 @@ library(relsurv)
 # 1. SIMULATION PARAMETERS
 # ---------------------------------------------------------
 params <- list(
-  lambda         = 0.09,
-  age_option     = "A",    
+  lambda         = 0.1,
+  age_option     = "C",    
   n              = 1000,   
-  max_time       = 5,      
+  max_time       = 10,      
   prop_female    = 0.5,    
  prop_x0        = 0.5,    
   year.start_min = 2008,   
@@ -16,11 +16,10 @@ params <- list(
   beta_sex       = -1.5,   
   beta_age       = 0.0,   
   beta_X         = 0.0,   
-  borne_a        = 7       
+  borne_a        = 15       
 )
-
 # Number of simulations to run
-N_sim <- 15
+N_sim <- 20
 
 # Base seed for reproducibility
 base_seed <- 12345
@@ -110,7 +109,7 @@ plot(
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival",
   main = "Estimated vs Theoretical Net Survival (Sim 1)",
-  ylim = c(0.8, 1)
+  ylim = c(0.7, 1)
 )
 
 lines(
@@ -128,44 +127,5 @@ legend(
   col = c("blue", "red"),
   lwd = c(2, 2),
   lty = c(1, 2),
-  bty = "n"
-)
-
-# ---------------------------------------------------------
-# 5. VISUALIZING ALL SIMULATIONS
-# ---------------------------------------------------------
-# Set up a blank plot with appropriate axes
-plot(
-  0, type = "n",
-  xlim = c(0, params$max_time * 365.241),
-  ylim = c(0.7, 1), # Adjust this depending on your mortality rate
-  xlab = "Time since diagnosis (Days)",
-  ylab = "Hypothetical Survival Probability",
-  main = paste("Net Survival across", N_sim, "Simulated Cohorts")
-)
-grid()
-
-# Loop through each simulation ID and add its Kaplan-Meier curve
-for (i in 1:N_sim) {
-  # Subset data for the current simulation
-  data_sim <- subset(all_simulated_data, sim_id == i)
-  
-  # Calculate KM for the hypothetical (net) world
-  km_sim <- survfit(Surv(hypo_time_days, hypothetical_status) ~ 1, data = data_sim)
-  
-  # Plot the line with a semi-transparent color (alpha = 0.3) to prevent overcrowding
-  lines(km_sim, col = rgb(0.2, 0.5, 0.8, alpha = 0.3), lwd = 2, conf.int = FALSE)
-}
-
-# Calculate and plot the pooled overall average across ALL simulations
-km_pooled <- survfit(Surv(hypo_time_days, hypothetical_status) ~ 1, data = all_simulated_data)
-lines(km_pooled, col = "red", lwd = 3, conf.int = FALSE)
-
-# Add a legend
-legend(
-  "bottomleft", 
-  legend = c("Individual Simulations", "Pooled Average"),
-  col = c(rgb(0.2, 0.5, 0.8, alpha = 0.5), "red"), 
-  lwd = c(2, 3), 
   bty = "n"
 )
