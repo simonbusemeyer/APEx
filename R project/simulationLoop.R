@@ -7,20 +7,20 @@ library(relsurv)
 params <- list(
   lambda         = 0.03,
   age_option     = "A",    
-  n              = 1000,   
+  n              = 2000,   
   max_time       = 5,      
-  prop_female    = 0.0,    
- # prop_x0        = 0.5,    
+  prop_female    = 0.5,    
+ prop_x0        = 0.5,    
   year.start_min = 2008,   
   year.start_max = 2010,   
-#  beta_sex       = -1.5,   
-  beta_age       = 0.02,   
-#  beta_X         = 0.01,   
+  beta_sex       = -1.5,   
+  beta_age       = 0.0,   
+  beta_X         = 0.0,   
   borne_a        = 7       
 )
 
 # Number of simulations to run
-N_sim <- 100
+N_sim <- 50
 
 # Base seed for reproducibility
 base_seed <- 12345

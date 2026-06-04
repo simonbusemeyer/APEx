@@ -1,0 +1,15 @@
+---
+title: "Notes"
+output: html_document
+date: "2026-06-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## exponential survival time
+
+i want to plot all of these overlayed 1) each simulation run 2) the pooled simulations 3) the theoretical survival curve given as S(t) = exp(-lambda * t * exp(beta * Z)).
+
+stochastic process
