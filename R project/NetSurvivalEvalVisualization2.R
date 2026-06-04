@@ -4,8 +4,8 @@
 message("Calculating estimates for all simulations. This may take a moment...")
 
 # 1. Define the theoretical survival function (from UtilsExponential)
-survtheo <- function(t, lambda, beta_sex, beta_age, beta_X, sex, ageStand, X) {
-  exp(-lambda * t * exp(beta_sex * sex + beta_age * ageStand + beta_X * X))
+survtheo <- function(t, lambda, beta_sex, beta_age, sex, ageStand) {
+  exp(-lambda * t * exp(beta_sex * sex + beta_age * ageStand))
 }
 
 # 2. Calculate the average theoretical net survival curve across the whole cohort
@@ -17,10 +17,10 @@ surv_theo_matrix <- sapply(1:nrow(all_simulated_data), function(i) {
     lambda    = params$lambda,
     beta_sex  = params$beta_sex, 
     beta_age  = params$beta_age,
-    beta_X    = params$beta_X,
+ #   beta_X    = params$beta_X,
     sex       = all_simulated_data$sex_num[i],
-    ageStand  = all_simulated_data$ageStand[i],
-    X         = all_simulated_data$race_num[i]
+    ageStand  = all_simulated_data$ageStand[i]
+ #   X         = all_simulated_data$race_num[i]
   )
 })
 
@@ -30,8 +30,8 @@ surv_theo_mean <- rowMeans(surv_theo_matrix)
 pp_pooled <- rs.surv(
   Surv(observed_time_days, status) ~ 1,
   data = all_simulated_data,
-  ratetable = survexp.usr,
-  rmap = list(age = age_days, sex = sex, race = race, year = year_diagnosis),
+  ratetable = survexp.us,
+  rmap = list(age = age_days, sex = sex, year = year_diagnosis),
   method = "pohar-perme"
 )
 
@@ -42,10 +42,10 @@ pp_pooled <- rs.surv(
 plot(
   0, type = "n",
   xlim = c(0, params$max_time),
-  ylim = c(0.5, 1), # Adjust this lower bound depending on your lambda
+  ylim = c(0.8, 1), # Adjust this lower bound depending on your lambda
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
-main = paste("Net Survival: PP vs Theoretical (", N_sim, " runs) | Age ~ U(15-39) ", sep="")
+main = paste("Net Survival: PP vs Theoretical (", N_sim, " runs) | Age ~ U(80-89) ", sep="")
 )
 grid()
 
@@ -56,8 +56,8 @@ for (i in 1:N_sim) {
   pp_sim <- rs.surv(
     Surv(observed_time_days, status) ~ 1,
     data = data_sim,
-    ratetable = survexp.usr,
-    rmap = list(age = age_days, sex = sex, race = race, year = year_diagnosis),
+    ratetable = survexp.us,
+    rmap = list(age = age_days, sex = sex, year = year_diagnosis),
     method = "pohar-perme"
   )
   
@@ -80,7 +80,7 @@ legend(
   legend = c(
     "Individual PP Estimates", 
     "Pooled PP Estimate", 
-    "Theoretical Survival Curve S(t) = exp(-lambda * t * exp(beta * Z)) "
+    "Theoretical Net Survival Curve S(t) = exp(-lambda * t * exp(beta * Z)) "
   ),
   col = c(rgb(0.2, 0.5, 0.8, alpha = 0.5), "red", "black"), 
   lwd = c(2, 3, 3, 3), 

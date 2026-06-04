@@ -8,12 +8,12 @@ generate_data <- function(lambda,
                           n,
                           max_time,
                           prop_female,
-                          prop_x0,
+                      #    prop_x0,
                           year.start_min,
                           year.start_max,
                           beta_sex,
                           beta_age,
-                          beta_X,
+                   #       beta_X,
                           borne_a) {
   
   # Covariables generation: Age
@@ -48,7 +48,7 @@ generate_data <- function(lambda,
   sex  <- rbinom(n, size = 1, prob = prop_female)   # hommes=0, femmes=1
   
   uX   <- runif(n)
-  X    <- rbinom(n, size = 1, prob = 1 - prop_x0)   # X = 0 ou 1
+#  X    <- rbinom(n, size = 1, prob = 1 - prop_x0)   # X = 0 ou 1
   
   
   if (year.start_min != year.start_max) {
@@ -64,7 +64,7 @@ generate_data <- function(lambda,
   
   # T_E generation
   tempuS <- runif(n)
-  exp.betaz <- exp(beta_sex * sex + beta_age * ageStand + beta_X * X)
+  exp.betaz <- exp(beta_sex * sex + beta_age * ageStand)
   
   ui <- runif(n)
   tpsSpe <- -log(ui) / (lambda * exp.betaz)
@@ -73,25 +73,25 @@ generate_data <- function(lambda,
   tpsGene <- rep(0, n)
   TauxAtt <- rep(NA, n)
   sexNom <- ifelse(sex == 0, "male", "female")
-  Xrace <- ifelse(X == 0, "white", "black")
+ # Xrace <- ifelse(X == 0, "white", "black")
   
   
   f1 <- function(i) {
     uAtt <- runif(1)
     
-    i.age <- which(attr(survexp.usr, which = "dimnames")[[1]] == trunc(age[i]))
-    i.sex <- which(attr(survexp.usr, which = "dimnames")[[2]] == sexNom[i])
-    i.race <- which(attr(survexp.usr, which = "dimnames")[[3]] == Xrace[i])
-    i.year <- which(attr(survexp.usr, which = "dimnames")[[4]] == format(year.start[i], "%Y"))
+    i.age <- which(attr(survexp.us, which = "dimnames")[[1]] == trunc(age[i]))
+    i.sex <- which(attr(survexp.us, which = "dimnames")[[2]] == sexNom[i])
+  #  i.race <- which(attr(survexp.usr, which = "dimnames")[[3]] == Xrace[i])
+    i.year <- which(attr(survexp.us, which = "dimnames")[[3]] == format(year.start[i], "%Y"))
     
     if (length(i.age) == 0 ||
         length(i.sex) == 0 || length(i.year) == 0) {
       return(NA)  # Retourner NA si indices invalides
     }
     
-    max.i.age <- length(attributes(survexp.usr)$dimnames[[1]])
-    max.i.year <- length(attributes(survexp.usr)$dimnames[[4]])
-    TauxAtt[i] <- 1 - exp(-365.24 * survexp.usr[i.age, i.sex, i.race, i.year])
+    max.i.age <- length(attributes(survexp.us)$dimnames[[1]])
+    max.i.year <- length(attributes(survexp.us)$dimnames[[3]])
+    TauxAtt[i] <- 1 - exp(-365.24 * survexp.us[i.age, i.sex, i.year])
     
     if (uAtt <= TauxAtt[i]) {
       tpsG <- runif(1)
@@ -103,7 +103,7 @@ generate_data <- function(lambda,
         i.year <- min(i.year + 1, max.i.year) # and one calendar year more...
         
         uAtt <- runif(1)
-        TauxAtt[i] <- 1 - exp(-365.24 * survexp.usr[i.age, i.sex, i.race, i.year])
+        TauxAtt[i] <- 1 - exp(-365.24 * survexp.us[i.age, i.sex, i.year])
       }
       tpsG <- runif(1)
       tpsGene[i] <- tpsGene[i] + tpsG
@@ -148,8 +148,8 @@ generate_data <- function(lambda,
     ageStand = ageStand,
     sex_num = sex,
     sex = factor(sexNom, levels = c("male", "female")),
-    race = factor(Xrace, levels = c("white", "black")),
-    race_num = X,
+ #   race = factor(Xrace, levels = c("white", "black")),
+  #  race_num = X,
     tpsCens = tpsCens,
     tpsGene = tpsGene,
     tpsSpe = tpsSpe,

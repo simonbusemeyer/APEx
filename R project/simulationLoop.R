@@ -5,18 +5,18 @@ library(relsurv)
 # 1. SIMULATION PARAMETERS
 # ---------------------------------------------------------
 params <- list(
-  lambda         = 0.1,
-  age_option     = "C",    
+  lambda         = 0.03,
+  age_option     = "A",    
   n              = 1000,   
-  max_time       = 10,      
-  prop_female    = 0.5,    
- prop_x0        = 0.5,    
+  max_time       = 3,      
+  prop_female    = 0.0,    
+# prop_x0        = 0.5,    
   year.start_min = 2008,   
   year.start_max = 2010,   
-  beta_sex       = -1.5,   
-  beta_age       = 0.0,   
-  beta_X         = 0.0,   
-  borne_a        = 15       
+  beta_sex       = -0,   
+  beta_age       = 0.02,   
+#  beta_X         = 0.0,   
+  borne_a        = 4       
 )
 # Number of simulations to run
 N_sim <- 20
@@ -41,12 +41,12 @@ for (i in 1:N_sim) {
     n              = params$n,
     max_time       = params$max_time,
     prop_female    = params$prop_female,
-    prop_x0        = params$prop_x0,
+  #  prop_x0        = params$prop_x0,
     year.start_min = params$year.start_min,
     year.start_max = params$year.start_max,
     beta_sex       = params$beta_sex,
     beta_age       = params$beta_age,
-    beta_X         = params$beta_X,
+  #  beta_X         = params$beta_X,
     borne_a        = params$borne_a
   )
   
@@ -89,11 +89,10 @@ KM_estimate <- survfit(Surv(hypo_time_days, hypothetical_status) ~ 1, data = dat
 netSurv_estimate <- rs.surv(
   Surv(observed_time_days, status) ~ 1,
   data = data_sim1,
-  ratetable = survexp.usr,
+  ratetable = survexp.us,
   rmap = list(
     age = age_days,
     sex = sex,
-    race = race,
     year = year_diagnosis
   ),
   method = "pohar-perme"
