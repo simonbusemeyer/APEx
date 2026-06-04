@@ -6,11 +6,11 @@ library(relsurv)
 params <- list(
   lambda         = 0.03,
   # Baseline excess hazard
-  age_option     = "B",
+  age_option     = "A",
   # Age distribution option
   n              = 2000,
   # Number of patients to simulate
-  max_time       = 10,
+  max_time       = 4,
   # Administrative censoring at 5 years
   prop_female    = 0.5,
   # 50% women in the dataset
@@ -26,7 +26,7 @@ params <- list(
   # Effect of age on excess mortality
   beta_X         = 0.01,
   # Effect of binary covariate X on excess mortality
-  borne_a        = 15      # Maximum random censoring time (uniform[0, 6])
+  borne_a        = 6      # Maximum random censoring time (uniform[0, 6])
 )
 
 simulated_data <- generate_data(
@@ -73,8 +73,13 @@ netSurv_estimate <- rs.surv(
     race = race,
     year = year_diagnosis
   ),
-  method = "pohar-perme"
+  method = "pohar-perme", add.times = c(1,2,4) * 365.241
 )
+
+netSurv_save <- summary(netSurv_estimate, times = c(1,2,4) * 365.241)
+netSurv_save$surv
+netSurv_save$lower
+netSurv_save$upper
 
 # survival curves
 plot(

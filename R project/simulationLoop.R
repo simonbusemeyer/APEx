@@ -5,22 +5,22 @@ library(relsurv)
 # 1. SIMULATION PARAMETERS
 # ---------------------------------------------------------
 params <- list(
-  lambda         = 0.04,
+  lambda         = 0.03,
   age_option     = "A",    
   n              = 1000,   
-  max_time       = 10,      
-  prop_female    = 0.5,    
-  prop_x0        = 0.5,    
+  max_time       = 5,      
+  prop_female    = 0.0,    
+ # prop_x0        = 0.5,    
   year.start_min = 2008,   
   year.start_max = 2010,   
-  beta_sex       = -1.5,   
+#  beta_sex       = -1.5,   
   beta_age       = 0.02,   
-  beta_X         = 0.01,   
-  borne_a        = 15       
+#  beta_X         = 0.01,   
+  borne_a        = 7       
 )
 
 # Number of simulations to run
-N_sim <- 10
+N_sim <- 100
 
 # Base seed for reproducibility
 base_seed <- 12345
