@@ -21,12 +21,6 @@ generate_data <- function(lambda,
     # Option A: age ~ Uniform[80, 89]
     age <- runif(n, min = 80, max = 89)
     
-  } else if (age_option == "B") {
-    # Option B: age ~ Beta(1,3) scaled to [80, 90]
-    # rbeta gives a value between 0 and 1. 
-    # Multiply by 10 (the range) and add 80 (the minimum).
-    age <- 80 + (10 * rbeta(n, shape1 = 1.1, shape2 = 2.2))
-    
   } else if (age_option == "C") {
     # Option C: age ~ Uniform[15, 39]
     age <- runif(n, min = 15, max = 39)
@@ -37,7 +31,7 @@ generate_data <- function(lambda,
     
   } else {
     # Catch any invalid inputs
-    stop("age_option must be 'A', 'B', 'C', or 'D'")
+    stop("age_option must be 'A', 'C', or 'D'")
   }
   
   ageMoyen <- mean(age)
@@ -112,6 +106,8 @@ generate_data <- function(lambda,
   }
   tpsGene <- sapply(1:n, f1)
   
+  tpsGene <- tpsGene * 365.241
+  tpsSpe  <- tpsSpe * 365.241
   tpsSurv <- pmin(tpsGene, tpsSpe)
   
   # CENSORING
@@ -142,6 +138,10 @@ generate_data <- function(lambda,
   # hypothetical world
   temps2[temps2 > max_time]  <- max_time
   
+  # Added event_type 
+  event_type <- ifelse(temps == tpsCens | temps == max_time, "censored",
+                       ifelse(temps == tpsSpe, "cancer", "other"))
+  
   result <- data.frame(
     patient_id = 1:n,
     age = round(age, 1),
@@ -157,6 +157,7 @@ generate_data <- function(lambda,
     observed_time = temps,
     status = statut,
     cause = cause,
+    event_type = event_type,
     hypothetical_time = temps2,
     hypothetical_status = cause2,
     admin_cens = max_time
