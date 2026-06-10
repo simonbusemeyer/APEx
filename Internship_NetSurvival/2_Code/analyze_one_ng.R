@@ -19,9 +19,9 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
     add.times = times_days
   )
   
-  plot(pp_fit)
+  #plot(pp_fit)
   
-  pp_summary <- summary(pp_fit, times = times_days) 
+  pp_summary <- summary(pp_fit, times = times_days, extend = TRUE) 
   net_surv_pp    <- pp_summary$surv
   net_surv_lower <- pp_summary$lower
   net_surv_upper <- pp_summary$upper
