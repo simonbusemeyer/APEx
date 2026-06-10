@@ -3,6 +3,7 @@ library(relsurv)
 
 source("generate_dataModified_ng.R")
 source("analyze_one_ng.R")
+source("compute_metrics.R")
 
 # --- 0. Parameters --- ####
 n_patients <- 2000 
@@ -45,7 +46,7 @@ nessie_output <- nessie(
 
 # chosen follow-up = 4 years
 
-# --- 3. (Task 2) censoring calibration and proportion of cacner deaths --- ####
+# --- 3. (Task 2) censoring calibration and proportion of cancer deaths --- ####
 datasets <- list()
 censoring_rate <- numeric(length = N_files)
 
@@ -209,4 +210,5 @@ elapsed <- proc.time() - start
 elapsed
 # utilisateur     système      écoulé 
 #     0.77        0.05        0.81
+
 
