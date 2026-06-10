@@ -69,13 +69,16 @@ generate_data <- function(lambda,
   sexNom <- ifelse(sex == 0, "male", "female")
   
   f1 <- function(i) {
-    # 1. Single uniform draw mapping to the entire lifespan trajectory
     U <- runif(1)
-    H_target <- -log(U) # True target cumulative hazard
-    H_accum <- 0        # Running total of hazard experienced
-    tpsGene_val <- 0    # Running total of time lived (in years)
+    H_target <- -log(U) 
+    H_accum <- 0        
+    tpsGene_val <- 0    
     
-    i.age <- which(attr(survexp.us, which = "dimnames")[[1]] == trunc(age[i]))
+    # Calculate how much time remains in the starting age block
+    current_age_floor <- trunc(age[i])
+    fraction_first_year <- 1 - (age[i] - current_age_floor) 
+    
+    i.age <- which(attr(survexp.us, which = "dimnames")[[1]] == current_age_floor)
     i.sex <- which(attr(survexp.us, which = "dimnames")[[2]] == sexNom[i])
     i.year <- which(attr(survexp.us, which = "dimnames")[[3]] == format(year.start[i], "%Y"))
     
@@ -86,31 +89,36 @@ generate_data <- function(lambda,
     max.i.age <- length(attributes(survexp.us)$dimnames[[1]])
     max.i.year <- length(attributes(survexp.us)$dimnames[[3]])
     
+    is_first_year <- TRUE # Flag to track if we are in the starting fractional year
+    
     while (TRUE) {
-      # 2. Extract daily hazard and calculate annual hazard block
       h_daily <- survexp.us[i.age, i.sex, i.year]
-      H_year <- h_daily * 365.241 
       
-      # 3. Check if the cumulative hazard threshold is crossed in this year
-      if (H_accum + H_year >= H_target) {
+      # Year block size depends on whether it's the first partial year or a full year
+      year_fraction <- ifelse(is_first_year, fraction_first_year, 1)
+      H_step <- h_daily * 365.241 * year_fraction 
+      
+      if (H_accum + H_step >= H_target) {
         # Calculate the exact fraction of the year lived before the event
         H_remaining <- H_target - H_accum
-        fraction_of_year <- H_remaining / H_year
         
-        tpsGene_val <- tpsGene_val + fraction_of_year
+        # Time lived in this interval is proportional to remaining hazard vs daily rate
+        tpsGene_val <- tpsGene_val + (H_remaining / (h_daily * 365.241))
         break
       } else {
-        # Patient survives the full year; accumulate hazard and time
-        H_accum <- H_accum + H_year
-        tpsGene_val <- tpsGene_val + 1
+        # Patient survives this interval; accumulate hazard and time
+        H_accum <- H_accum + H_step
+        tpsGene_val <- tpsGene_val + year_fraction
         
         # Advance ratetable indices (capped at max available limits)
         i.age <- min(i.age + 1, max.i.age)
         i.year <- min(i.year + 1, max.i.year)
+        is_first_year <- FALSE # All subsequent loops are full 1-year blocks
       }
     }
     return(tpsGene_val)
   }
+  
   tpsGene <- sapply(1:n, f1)
   
   # tpsGene <- tpsGene * 365.241

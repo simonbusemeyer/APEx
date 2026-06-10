@@ -11,7 +11,7 @@ source("compute_metrics.R")
 # --- 0. Parameters --- ####
 n_patients <- 2000
 age_option <- "A"
-lambda <- 0.01 
+#lambda <- 0.01 
 beta_age <- 0.02
 beta_sex <- 0
 max_time <- 4
@@ -19,12 +19,12 @@ max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 10
+N_files <- 1000
 
 #lambda/borne_a pairs
 scenarios <- data.frame(
-  lambda = c(0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
-  borne_a = c(Inf, Inf, 30, 12, 5, 3, 2)
+  lambda = c(0.02, 0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
+  borne_a = c(Inf, Inf, Inf, 30, 12, 5, 3, 2)
 )
 
 set.seed(12345)

@@ -16,50 +16,1054 @@ stochastic process
 
 
 ##without gemini corrections
++           age_option = "A", 
++           n = n_patients, 
++           max_time = max_time_days,
++           prop_female = 0,
++           year.start_min = 2008, 
++           year.start_max = 2010,
++           beta_sex = 0, 
++           beta_age = beta_age, 
++           borne_a = current_borne_a
++         )
++         
++         # Extract metrics per dataset
++         censoring_rates[i] <- mean(df$event_type == "censored")
++         pct_cancer_rates[i]  <- mean(df$event_type == "cancer")
++       }
++       
++       # 2. Compute mean rates across the datasets
++       mean_censoring <- mean(censoring_rates)
++       mean_cancer    <- mean(pct_cancer_rates)
++       
++       # 3. Check boundaries and adjust borne_a
++       if (mean_censoring > 0.52) {
++         current_borne_a <- current_borne_a * 1.1 
++         iteration <- iteration + 1
++       } else if (mean_censoring < 0.48) {
++         current_borne_a <- current_borne_a * 0.9
++         iteration <- iteration + 1
++       } else {
++         calibrated <- TRUE
++         
++         # Save calibration parameters
++         calibration_results <- rbind(
++           calibration_results, 
++           data.frame(
++             lambda = lam, 
++             calibrated_borne_a = current_borne_a, 
++             observed_censoring_rate = mean_censoring,
++             pct_cancer_pilot = mean_cancer
++           )
++         )
++         
++         #Task 4 table
++         cat(sprintf("Success: Lambda = %.2f | borne_a = %7.1f | Censoring = %4.1f%% | Cancer = %4.1f%% | (Iterations: %d)\n", 
++                     lam, current_borne_a, mean_censoring * 100, mean_cancer * 100, iteration))
++       }
++     }
++   }
++   
++   return(calibration_results)
++ }
+> start <- proc.time()
+> 
+> lambdas <- c(0.2) 
+> set.seed(12345)
+> 
+> # Call the external function
+> calibration_results <- calibrate_censoring_grid(
++   lambdas = lambdas,
++   n_patients = n_patients,
++   max_time_days = max_time_days,
++   beta_age = beta_age,
++   n_pilots = 10
++ )
+Starting censoring calibration...
+Success: Lambda = 0.20 | borne_a =  1944.5 | Censoring = 50.2% | Cancer = 32.2% | (Iterations: 4)
+> 
+> elapsed <- proc.time() - start
+> print(elapsed)
+   user  system elapsed 
+  7.236   0.198   7.708 
+> 
+> # View the final calibrated table
+> print(calibration_results)
+  lambda calibrated_borne_a observed_censoring_rate pct_cancer_pilot
+1    0.2           1944.543                  0.5017           0.3222
+> start <- proc.time()
+> 
+> lambdas <- c(0.1) 
+> set.seed(12345)
+> 
+> # Call the external function
+> calibration_results <- calibrate_censoring_grid(
++   lambdas = lambdas,
++   n_patients = n_patients,
++   max_time_days = max_time_days,
++   beta_age = beta_age,
++   n_pilots = 10
++ )
+Starting censoring calibration...
+Success: Lambda = 0.10 | borne_a =  4168.3 | Censoring = 51.6% | Cancer = 23.4% | (Iterations: 12)
+> 
+> elapsed <- proc.time() - start
+> print(elapsed)
+   user  system elapsed 
+ 21.471   0.237  22.179 
+> 
+> # View the final calibrated table
+> print(calibration_results)
+  lambda calibrated_borne_a observed_censoring_rate pct_cancer_pilot
+1    0.1           4168.301                 0.51575          0.23415
+> start <- proc.time()
+> 
+> res <- analyze_one(df, lambda, beta_age, times_years = c(1, 2, 3))
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+  0.277   0.044   0.515 
+> # =============================================================================
+> # generate_data.R
+> # Fonctions de génération de données de survie
+> # =============================================================================
+> 
+> generate_data <- function(lambda,
++                           age_option,
++                           n,
++                           max_time,
++                           prop_female,
++                           year.start_min,
++                           year.start_max,
++                           beta_sex,
++                           beta_age,
++                           borne_a) {
++   
++   # Covariables generation: Age
++   if (age_option == "A") {
++     # Option A: age ~ Uniform[80, 89]
++     age <- runif(n, min = 80, max = 89)
++     
++   } else if (age_option == "C") {
++     # Option C: age ~ Uniform[15, 39]
++     age <- runif(n, min = 15, max = 39)
++     
++   } else if (age_option == "D") {
++     # Option D: age ~ Uniform[50, 74]
++     age <- runif(n, min = 50, max = 74)
++     
++   } else {
++     # Catch any invalid inputs
++     stop("age_option must be 'A', 'C', or 'D'")
++   }
++   
++   ageMoyen <- mean(age)
++   # ageStand <- (age - ageMoyen) / sd(age)
++   ageCentre <- (age - ageMoyen)
++   
++   uSex <- runif(n)
++   pFem <- prop_female
++   sex  <- rbinom(n, size = 1, prob = prop_female)   # hommes=0, femmes=1
++   
++   if (year.start_min != year.start_max) {
++     year.start <- as.Date(paste0(
++       sample(year.start_min:year.start_max, n, replace = TRUE),
++       "-01-01"
++     )) +
++       sample(0:364, n, replace = TRUE)
++   } else {
++     year.start <- as.Date(paste0(year.start_min, "-01-01")) +
++       sample(0:364, n, replace = TRUE)
++   }
++   
++   # T_E generation
++   tempuS <- runif(n)
++   exp.betaz <- exp(beta_sex * sex + beta_age * ageCentre)
++   
++   ui <- runif(n)
++   tpsSpe <- -log(ui) / (lambda * exp.betaz)
++   
++   # T_P generation
++   tpsGene <- rep(0, n)
++   TauxAtt <- rep(NA, n)
++   sexNom <- ifelse(sex == 0, "male", "female")
++ 
++   f1 <- function(i) {
++     uAtt <- runif(1)
++     
++     i.age <- which(attr(survexp.us, which = "dimnames")[[1]] == trunc(age[i]))
++     i.sex <- which(attr(survexp.us, which = "dimnames")[[2]] == sexNom[i])
++     i.year <- which(attr(survexp.us, which = "dimnames")[[3]] == format(year.start[i], "%Y"))
++     
++     if (length(i.age) == 0 ||
++         length(i.sex) == 0 || length(i.year) == 0) {
++       return(NA)  # Retourner NA si indices invalides
++     }
++     
++     max.i.age <- length(attributes(survexp.us)$dimnames[[1]])
++     max.i.year <- length(attributes(survexp.us)$dimnames[[3]])
++     TauxAtt[i] <- 1 - exp(-365.241 * survexp.us[i.age, i.sex, i.year])
++     
++     if (uAtt <= TauxAtt[i]) {
++       tpsG <- runif(1)
++       tpsGene[i] <- tpsG
++     } else{
++       while (uAtt > TauxAtt[i]) {
++         tpsGene[i] <- tpsGene[i] + 1
++         i.age <- min(i.age + 1, max.i.age) # happy birthday !
++         i.year <- min(i.year + 1, max.i.year) # and one calendar year more...
++         
++         uAtt <- runif(1)
++         TauxAtt[i] <- 1 - exp(-365.241 * survexp.us[i.age, i.sex, i.year])
++       }
++       tpsG <- runif(1)
++       tpsGene[i] <- tpsGene[i] + tpsG
++     }
++     return(tpsGene[i])
++   }
++   tpsGene <- sapply(1:n, f1)
++   
++   # tpsGene <- tpsGene * 365.241
++   # tpsSpe  <- tpsSpe * 365.241
++   tpsSurv <- pmin(tpsGene, tpsSpe)
++   
++   # CENSORING
++   borne_a = borne_a
++   
++   # censoring time
++   # tpsCens <- runif(n, min = 0, max = borne_a)
++   if (is.finite(borne_a)) {
++     tpsCens <- runif(n, min = 0, max = borne_a)
++   } else {
++     tpsCens <- rep(Inf, n)
++   }
++   
++   temps <- pmin(tpsCens, tpsSurv)
++   temps2 <- pmin(tpsCens, tpsSpe)
++   
++   statut     <- ifelse(temps == tpsCens, 0, 1)
++   
++   # cause of death
++   cause <- ifelse(tpsSurv == tpsSpe & temps != tpsCens, 1, 0)
++   
++   # hypothetical world
++   cause2     <- ifelse(temps2 == tpsCens, 0, 1)
++   
++   # administrative censoring
++   
++   statut[temps > max_time]   <-  0
++   cause[temps > max_time] <- 0
++   # hypothetical world
++   cause2[temps2 > max_time]  <-  0
++   
++   temps[temps > max_time]    <- max_time
++   # hypothetical world
++   temps2[temps2 > max_time]  <- max_time
++   
++   # Added event_type 
++   event_type <- ifelse(temps == tpsCens | temps == max_time, "censored",
++                        ifelse(temps == tpsSpe, "cancer", "other"))
++   
++   result <- data.frame(
++     patient_id = 1:n,
++     age = round(age, 1),
++     ageCentre = ageCentre,
++     sex_num = sex,
++     sex = factor(sexNom, levels = c("male", "female")),
++     tpsCens = tpsCens,
++     tpsGene = tpsGene,
++     tpsSpe = tpsSpe,
++     year_diagnosis = year.start,
++     observed_time = temps,
++     status = statut,
++     cause = cause,
++     event_type = event_type,
++     hypothetical_time = temps2,
++     hypothetical_status = cause2,
++     admin_cens = max_time
++   )
++   
++   return(result)
++ }
+> # =============================================================================
+> # analyze_one.R
+> # =============================================================================
+> 
+> 
+> 
+> analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
++   
++   # 1. Convert analysis times from years to days
++   times_days <- times_years * 365.241
++   
++   # 2. Fit the Pohar-Perme estimator
++   pp_fit <- rs.surv(
++     Surv(observed_time*365.241, status) ~ 1, 
++     data = df, 
++     ratetable = survexp.us, 
++     rmap = list(age = age * 365.241, sex = sex, year = year_diagnosis), 
++     method = "pohar-perme", 
++     add.times = times_days # FORGOTTEN LINE
++   )
++   
++   plot(pp_fit)
++   
++   pp_summary <- summary(pp_fit, times = times_days) 
++   net_surv_pp    <- pp_summary$surv
++   net_surv_lower <- pp_summary$lower
++   net_surv_upper <- pp_summary$upper
++   
++   # net_surv_theo <- sapply(times_days, function(t) {
++   #   mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))
++   # })
++   
++   net_surv_theo <- function(t){
++     mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))
++   }
++   net_surv_theo_3points <- sapply(times_years, net_surv_theo) # YEARS INSTEAD OF DAYS HERE!
++   
++   diff       <- net_surv_pp - net_surv_theo_3points
++   covered    <- (net_surv_lower <= net_surv_theo_3points) & (net_surv_theo_3points <= net_surv_upper)
++   pct_cancer <- mean(df$event_type == "cancer")
++   
++   res <- data.frame(
++     time       = times_years,
++     net_surv_pp       = net_surv_pp,
++     net_surv_lower    = net_surv_lower,
++     net_surv_upper    = net_surv_upper,
++     net_surv_theo     = net_surv_theo_3points,
++     diff       = diff,
++     covered    = covered,
++     pct_cancer = pct_cancer
++   )
++   
++   return(res)
++ }
+> library(survival)
+> library(relsurv)
+> 
+> source("generate_dataModified_ng.R")
+> source("analyze_one_ng.R")
+> 
+> # --- 0. Parameters --- ####
+> n_patients <- 2000 
+> lambda <- 0.01 
+> beta_age <- 0.02
+> max_time <- 4
+> max_time_days <- max_time * 365.241
+> borne_a <- Inf
+> N_files <- 100
+> 
+> 
+> # --- 2. Generating 1 dataset --- ####
+> df <- generate_data(
++   lambda, age_option = "A", n = n_patients, max_time = max_time,#max_time_days,
++   prop_female = 0,
++   year.start_min = 2008, year.start_max = 2010,
++   beta_sex = 0, beta_age = beta_age, borne_a = borne_a
++ )
+> 
+> 
+> # --- 2. (Task 1) nessie --- ####
+> #Create age groups
+> breaks <- pretty(df$age, n = 5)
+> df$agegr <- cut(df$age, breaks = breaks, include.lowest = TRUE)
+> 
+> nessie_output <- nessie(
++   Surv(observed_time*365.241, status) ~ sex + agegr,
++   data = df,
++   ratetable = survexp.us,
++   times = seq(0, max_time, 1),
++   rmap = list(age = age*365.241, sex = sex, year = year_diagnosis)
++ )
 
-   lambda pct_cancer time_t          bias        rmse ecr
-1    0.05    0.14855      1  0.0050548609 0.008162508 1.0
-2    0.05    0.14855      2  0.0110256243 0.014401810 0.8
-3    0.05    0.14855      3  0.0168744557 0.020229712 0.9
-4    0.10    0.26600      1  0.0061502912 0.010949719 0.9
-5    0.10    0.26600      2  0.0090559115 0.014280712 0.9
-6    0.10    0.26600      3  0.0197137899 0.024640225 0.8
-7    0.20    0.42695      1  0.0104998547 0.014881933 0.9
-8    0.20    0.42695      2  0.0144501336 0.023334179 0.8
-9    0.20    0.42695      3  0.0186285714 0.024174841 0.8
-10   0.30    0.52240      1  0.0044701399 0.013919273 0.9
-11   0.30    0.52240      2  0.0084691603 0.018448322 0.9
-12   0.30    0.52240      3  0.0080167237 0.016574931 0.9
-13   0.50    0.56035      1  0.0019899325 0.013852705 1.0
-14   0.50    0.56035      2  0.0029817981 0.013196385 0.9
-15   0.50    0.56035      3  0.0079232809 0.012026051 1.0
-16   1.00    0.64305      1 -0.0001727626 0.012755965 1.0
-17   1.00    0.64305      2  0.0030168528 0.011630912 1.0
-18   1.00    0.64305      3 -0.0035291232 0.021745499 0.8
-19   1.50    0.65260      1  0.0030094352 0.011266213 1.0
-20   1.50    0.65260      2 -0.0066960273 0.023611541 0.8
-21   1.50    0.65260      3  0.0321490313 0.039323331 0.2
+                           0     1     2     3     4 c.exp.surv
+sexfemale=0,agegr(82,84] 462 423.6 385.0 346.5 308.2        6.8
+sexfemale=0,agegr(84,86] 441 395.2 350.4 306.9 264.9        5.8
+sexfemale=0,agegr(86,88] 464 404.8 348.6 295.6 246.3        5.0
+sexfemale=0,agegr(88,90] 200 170.6 143.4 118.4  95.8        4.5
+sexfemale=0,agegr[80,82] 433 403.7 374.1 344.0 313.5        7.8
 
-## with gemini corrections
-   lambda pct_cancer time_t          bias        rmse ecr
-1    0.05    0.14895      1  4.973799e-03 0.008893286 0.9
-2    0.05    0.14895      2  9.348958e-03 0.015414261 0.9
-3    0.05    0.14895      3  1.834945e-02 0.024817681 0.9
-4    0.10    0.27200      1  4.646951e-03 0.009303698 0.9
-5    0.10    0.27200      2  5.774886e-03 0.012289933 0.9
-6    0.10    0.27200      3  1.037723e-02 0.015897259 0.9
-7    0.20    0.44270      1 -2.328863e-05 0.014870744 0.9
-8    0.20    0.44270      2  4.326561e-03 0.016425537 0.9
-9    0.20    0.44270      3  3.188737e-03 0.015609581 0.9
-10   0.30    0.52155      1 -4.615241e-03 0.011212454 1.0
-11   0.30    0.52155      2 -2.357256e-03 0.011312818 1.0
-12   0.30    0.52155      3  6.701829e-03 0.011857940 1.0
-13   0.50    0.55750      1  5.796482e-03 0.011156573 1.0
-14   0.50    0.55750      2  8.104759e-03 0.017586465 0.9
-15   0.50    0.55750      3  1.260784e-02 0.023778630 0.7
-16   1.00    0.64155      1 -3.241437e-03 0.009521302 1.0
-17   1.00    0.64155      2  3.438401e-03 0.013268201 1.0
-18   1.00    0.64155      3  6.978062e-03 0.015970697 0.8
-19   1.50    0.65715      1 -1.177927e-03 0.012143990 0.9
-20   1.50    0.65715      2 -5.858700e-03 0.019670323 0.9
-21   1.50    0.65715      3  3.299849e-02 0.037969572 0.0
+> 
+> # 0     1     2     3     4 c.exp.surv
+> # sexfemale=0,agegr(82,84] 448 410.7 373.1 335.6 298.4        6.7
+> # sexfemale=0,agegr(84,86] 441 395.5 351.1 307.8 266.0        5.8
+> # sexfemale=0,agegr(86,88] 453 395.4 340.7 289.0 241.0        5.0
+> # sexfemale=0,agegr(88,90] 194 165.6 139.2 114.9  93.1        4.5
+> # sexfemale=0,agegr[80,82] 464 432.5 400.7 368.3 335.6        7.7
+> 
+> # chosen follow-up = 4 years
+> 
+> # --- 3. (Task 2) censoring calibration and proportion of cacner deaths --- ####
+> datasets <- list()
+> censoring_rate <- numeric(length = N_files)
+> 
+> borne_a <- 30
+> for(j in 1:N_files){
++   datasets[[j]] <- generate_data(
++     lambda, age_option = "A", n = n_patients, max_time = max_time,#max_time_days,
++     prop_female = 0,
++     year.start_min = 2008, year.start_max = 2010,
++     beta_sex = 0, beta_age = beta_age, borne_a = borne_a
++   )
++   
++   censoring_rate[j] <- sum(datasets[[j]]$status==0) / nrow(datasets[[j]])
++ }
+> 
+> (mean(censoring_rate))
+[1] 0.629445
+> 
+> # borne_a = 10 ---- censoring_rate = 0.606575
+> # borne_a = 20 ---- censoring_rate = 0.56168
+> # borne_a = 100 ---- censoring_rate = 0.5289
+> 
+> # => PB !
+> 
+> # quick checks
+> nb_total_deaths <- sum(datasets[[1]]$status==1) 
+> (cancer_deaths_prop <- sum(datasets[[1]]$status==1 & datasets[[1]]$observed_time==datasets[[1]]$tpsSpe)/nb_total_deaths)
+[1] 0.07368421
+> # 0.3213909
+> 
+> lambdas <- c(0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 1.5)
+> prop_cancer <- lapply(lambdas, function(lam) {
++   d <- generate_data(lambda = lam, age_option = "A", n = 5000,
++                      max_time = 5, prop_female = 0,
++                      year.start_min = 2008, year.start_max = 2010,
++                      beta_sex = 0, beta_age = 0.02, borne_a = Inf)
++   data.frame(
++     lambda      = lam,
++     prop_cancer = mean(d$cause == 1),
++     cens_rate   = mean(d$status == 0)
++   )
++ })
+> start <- proc.time()
+> 
+> res <- analyze_one(df, lambda, beta_age, times_years = c(1, 2, 3))
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+  0.398   0.011   0.425 
+> start <- proc.time()
+> 
+> res <- analyze_one(df, lambda, beta_age, times_years = c(1, 2, 3))
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+  0.387   0.031   0.462 
+> library(survival)
+> source("generate_dataModified.R")
+> source("analyze_one.R")
+> source("censoring_calibration.R")
+> 
+> # --- 0. Parameters ---
+> n_patients <- 2000 #
+> lambda <- 0.5 
+> beta_age <- 0.2
+> max_time <- 4
+> max_time_days <- max_time * 365.241
+> borne_a <- max_time_days
+> 
+> # --- 2. Timing check (run once on 1 dataset) ---
+> start <- proc.time()
+> 
+> df <- generate_data(
++   lambda, age_option = "A", n = n_patients, max_time = max_time_days,
++   prop_female = 0,
++   year.start_min = 2008, year.start_max = 2010,
++   beta_sex = 0, beta_age = beta_age, borne_a = borne_a
++ )
+> 
+> res <- analyze_one(df, lambda, beta_age, times_years = c(1, 2, 3))
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+  0.532   0.119   0.757 
+> 
+> start <- proc.time()
+> res
+  time      s_pp   s_lower   s_upper        s_theo      diff covered pct_cancer
+1    1 0.6271570 0.6016672 0.6537268  4.957397e-59 0.6271570   FALSE      0.523
+2    2 0.3684204 0.3391118 0.4002622 1.089949e-115 0.3684204   FALSE      0.523
+3    3 0.2127436 0.1817928 0.2489640 3.136609e-172 0.2127436   FALSE      0.523
+> # =============================================================================
+> # analyze_one.R
+> # =============================================================================
+> 
+> 
+> 
+> analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
++   
++   # 1. Convert analysis times from years to days
++   times_days <- times_years * 365.241
++   
++   # 2. Fit the Pohar-Perme estimator
++   pp_fit <- rs.surv(
++     Surv(observed_time*365.241, status) ~ 1, 
++     data = df, 
++     ratetable = survexp.us, 
++     rmap = list(age = age * 365.241, sex = sex, year = year_diagnosis), 
++     method = "pohar-perme", 
++     add.times = times_days
++   )
++   
++   plot(pp_fit)
++   
++   pp_summary <- summary(pp_fit, times = times_days) 
++   net_surv_pp    <- pp_summary$surv
++   net_surv_lower <- pp_summary$lower
++   net_surv_upper <- pp_summary$upper
++   
++   # net_surv_theo <- sapply(times_days, function(t) {
++   #   mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))
++   # })
++   
++   net_surv_theo <- function(t){
++     mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))
++   }
++   net_surv_theo_3points <- sapply(times_years, net_surv_theo) # YEARS INSTEAD OF DAYS HERE!
++   
++   diff       <- net_surv_pp - net_surv_theo_3points
++   covered    <- (net_surv_lower <= net_surv_theo_3points) & (net_surv_theo_3points <= net_surv_upper)
++   pct_cancer <- mean(df$event_type == "cancer")
++   
++   res <- data.frame(
++     time       = times_years,
++     net_surv_pp       = net_surv_pp,
++     net_surv_lower    = net_surv_lower,
++     net_surv_upper    = net_surv_upper,
++     net_surv_theo     = net_surv_theo_3points,
++     diff       = diff,
++     covered    = covered,
++     pct_cancer = pct_cancer
++   )
++   
++   return(res)
++ }
+> library(survival)
+> library(relsurv)
+> 
+> source("generate_dataModified_ng.R")
+> source("analyze_one_ng.R")
+> 
+> # --- 0. Parameters --- ####
+> n_patients <- 2000 
+> lambda <- 0.01 
+> beta_age <- 0.02
+> max_time <- 4
+> max_time_days <- max_time * 365.241
+> borne_a <- Inf
+> N_files <- 100
+> # --- 2. Generating 1 dataset --- ####
+> df <- generate_data(
++   lambda, age_option = "A", n = n_patients, max_time = max_time,#max_time_days,
++   prop_female = 0,
++   year.start_min = 2008, year.start_max = 2010,
++   beta_sex = 0, beta_age = beta_age, borne_a = borne_a
++ )
+> start <- proc.time()
+> 
+> res <- analyze_one(df, lambda, beta_age, times_years = c(1, 2, 3))
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+  0.402   0.050   0.502 
+> # utilisateur     système      écoulé 
+> #     0.77        0.05        0.81
+> res
+  time net_surv_pp net_surv_lower net_surv_upper net_surv_theo        diff covered pct_cancer
+1    1   0.9971418      0.9823183       1.012189     0.9900369 0.007104972    TRUE     0.0305
+2    2   0.9867637      0.9644989       1.009542     0.9801733 0.006590387    TRUE     0.0305
+3    3   0.9809642      0.9521738       1.010625     0.9704082 0.010556003    TRUE     0.0305
+> lambdas <- c(0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 1.5)
+> prop_cancer <- lapply(lambdas, function(lam) {
++   d <- generate_data(lambda = lam, age_option = "A", n = 2000,
++                      max_time = 4, prop_female = 0,
++                      year.start_min = 2008, year.start_max = 2010,
++                      beta_sex = 0, beta_age = 0.02, borne_a = Inf)
++   data.frame(
++     lambda      = lam,
++     prop_cancer = mean(d$cause == 1),
++     cens_rate   = mean(d$status == 0)
++   )
++ })
+> do.call(rbind, prop_cancer)
+  lambda prop_cancer cens_rate
+1   0.05      0.1440    0.5400
+2   0.10      0.2730    0.4310
+3   0.20      0.4510    0.2915
+4   0.30      0.5915    0.2045
+5   0.50      0.7410    0.1015
+6   1.00      0.8920    0.0100
+7   1.50      0.9355    0.0035
+> for(j in 1:10){
++     print(paste("toto is equal to ", j, sep=""))
++ }
+[1] "toto is equal to 1"
+[1] "toto is equal to 2"
+[1] "toto is equal to 3"
+[1] "toto is equal to 4"
+[1] "toto is equal to 5"
+[1] "toto is equal to 6"
+[1] "toto is equal to 7"
+[1] "toto is equal to 8"
+[1] "toto is equal to 9"
+[1] "toto is equal to 10"
+> rm(list=ls())
+> #Simulation Metrics Loop (run last)
+> 
+> library(survival)
+> library(relsurv)
+> 
+> source("generate_dataModified_ng_corrections.R")
+> source("analyze_one_ng.R")
+> source("compute_metrics.R")
+> 
+> # --- 0. Parameters --- ####
+> n_patients <- 2000
+> age_option <- "A"
+> #lambda <- 0.01 
+> beta_age <- 0.02
+> beta_sex <- 0
+> max_time <- 4
+> max_time_days <- max_time * 365.241
+> year.start_min <- 2008
+> year.start_max <- 2010
+> prop_female <- 0
+> N_files <- 10
+> 
+> #lambda/borne_a pairs
+> scenarios <- data.frame(
++   lambda = c(0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
++   borne_a = c(Inf, Inf, 30, 12, 5, 3, 2)
++ )
+> 
+> set.seed(12345)
+> 
+> all_metrics <- list()
+> 
+> #reconciles the output directory
+> if(!dir.exists("outputs/tables")) dir.create("outputs/tables", recursive = TRUE)
+> 
+> start <- proc.time()
+> 
+> 
+> #cycles through each scenario
+> for (k in 1:nrow(scenarios)) {
++ lambda_scenario <- scenarios$lambda[k]
++ borne_a_scenario <- scenarios$borne_a[k]
++ cat(sprintf("scenario %d/%d: lambda = %.2f, borne_a = %.0f\n", k, nrow(scenarios), lambda_scenario, borne_a_scenario))
++ 
++ results_scenarios <- vector("list", N_files)
++ df <- vector("list", N_files)
++ 
++ # cycles an inner loop through N_files datasets
++ for (j in 1:N_files) {
++   df[[j]] <- generate_data(
++     lambda = lambda_scenario,     
++     age_option = age_option,   
++     n = n_patients,        
++     max_time = max_time, 
++     prop_female = prop_female,     
++     year.start_min = year.start_min, 
++     year.start_max = year.start_max,
++     beta_sex = beta_sex,         
++     beta_age = beta_age, 
++     borne_a = borne_a_scenario         
++   )
++   results_scenarios[[j]] <- analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
++ }
++ 
++ # calculates aggregate Bias, RMSE, and ECR of all datasets
++ all_metrics[[k]] <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario)
++ }
+scenario 1/7: lambda = 0.05, borne_a = Inf
+scenario 2/7: lambda = 0.10, borne_a = Inf
+scenario 3/7: lambda = 0.20, borne_a = 30
+scenario 4/7: lambda = 0.30, borne_a = 12
+scenario 5/7: lambda = 0.50, borne_a = 5
+scenario 6/7: lambda = 1.00, borne_a = 3
+scenario 7/7: lambda = 1.50, borne_a = 2
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+ 32.563   0.857  36.747 
+> 
+> # stacks each scenario in one df
+> final_results <- do.call(rbind, all_metrics)
+> View(final_results)
+> rm(list=ls())
+> #Simulation Metrics Loop (run last)
+> 
+> library(survival)
+> library(relsurv)
+> 
+> source("generate_dataModified_ng_corrections.R")
+> source("analyze_one_ng.R")
+> source("compute_metrics.R")
+> 
+> # --- 0. Parameters --- ####
+> n_patients <- 2000
+> age_option <- "A"
+> #lambda <- 0.01 
+> beta_age <- 0.02
+> beta_sex <- 0
+> max_time <- 4
+> max_time_days <- max_time * 365.241
+> year.start_min <- 2008
+> year.start_max <- 2010
+> prop_female <- 0
+> N_files <- 100
+> 
+> #lambda/borne_a pairs
+> scenarios <- data.frame(
++   lambda = c(0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
++   borne_a = c(Inf, Inf, 30, 12, 5, 3, 2)
++ )
+> 
+> set.seed(12345)
+> 
+> all_metrics <- list()
+> 
+> #reconciles the output directory
+> if(!dir.exists("outputs/tables")) dir.create("outputs/tables", recursive = TRUE)
+> 
+> start <- proc.time()
+> 
+> 
+> #cycles through each scenario
+> for (k in 1:nrow(scenarios)) {
++ lambda_scenario <- scenarios$lambda[k]
++ borne_a_scenario <- scenarios$borne_a[k]
++ cat(sprintf("scenario %d/%d: lambda = %.2f, borne_a = %.0f\n", k, nrow(scenarios), lambda_scenario, borne_a_scenario))
++ 
++ results_scenarios <- vector("list", N_files)
++ df <- vector("list", N_files)
++ 
++ # cycles an inner loop through N_files datasets
++ for (j in 1:N_files) {
++   df[[j]] <- generate_data(
++     lambda = lambda_scenario,     
++     age_option = age_option,   
++     n = n_patients,        
++     max_time = max_time, 
++     prop_female = prop_female,     
++     year.start_min = year.start_min, 
++     year.start_max = year.start_max,
++     beta_sex = beta_sex,         
++     beta_age = beta_age, 
++     borne_a = borne_a_scenario         
++   )
++   results_scenarios[[j]] <- analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
++ }
++ 
++ # calculates aggregate Bias, RMSE, and ECR of all datasets
++ all_metrics[[k]] <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario)
++ }
+scenario 1/7: lambda = 0.05, borne_a = Inf
+scenario 2/7: lambda = 0.10, borne_a = Inf
+scenario 3/7: lambda = 0.20, borne_a = 30
+scenario 4/7: lambda = 0.30, borne_a = 12
+scenario 5/7: lambda = 0.50, borne_a = 5
+scenario 6/7: lambda = 1.00, borne_a = 3
+scenario 7/7: lambda = 1.50, borne_a = 2
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+322.554   2.953 333.551 
+> 
+> # stacks each scenario in one df
+> final_results <- do.call(rbind, all_metrics)
+> final_results
+   lambda pct_cancer time_t          bias        rmse  ecr
+1    0.05   0.148130      1  0.0027265409 0.008624593 0.92
+2    0.05   0.148130      2  0.0091295368 0.014341266 0.90
+3    0.05   0.148130      3  0.0155517048 0.020961278 0.83
+4    0.10   0.270945      1  0.0065896776 0.011443045 0.88
+5    0.10   0.270945      2  0.0113536531 0.017609631 0.83
+6    0.10   0.270945      3  0.0157293503 0.022262585 0.83
+7    0.20   0.436230      1  0.0043439175 0.011908459 0.94
+8    0.20   0.436230      2  0.0086688449 0.018317707 0.84
+9    0.20   0.436230      3  0.0115549217 0.020634312 0.84
+10   0.30   0.521165      1  0.0040765525 0.012721406 0.92
+11   0.30   0.521165      2  0.0063891659 0.015716961 0.92
+12   0.30   0.521165      3  0.0063160494 0.015946568 0.93
+13   0.50   0.561955      1  0.0037086938 0.014164705 0.91
+14   0.50   0.561955      2  0.0041023292 0.015948051 0.93
+15   0.50   0.561955      3  0.0073396032 0.016637482 0.92
+16   1.00   0.642965      1  0.0023486644 0.014190180 0.93
+17   1.00   0.642965      2  0.0015347702 0.012003422 0.96
+18   1.00   0.642965      3 -0.0007493073 0.019710220 0.84
+19   1.50   0.655730      1  0.0012217744 0.011800543 0.97
+20   1.50   0.655730      2  0.0057811070 0.018202950 0.88
+21   1.50   0.655730      3  0.0446258102 0.047847651 0.04
+> rm(list=ls())
+> #Simulation Metrics Loop (run last)
+> 
+> library(survival)
+> library(relsurv)
+> 
+> source("generate_dataModified_ng_corrections.R")
+> source("analyze_one_ng.R")
+> source("compute_metrics.R")
+> 
+> # --- 0. Parameters --- ####
+> n_patients <- 2000
+> age_option <- "A"
+> #lambda <- 0.01 
+> beta_age <- 0.02
+> beta_sex <- 0
+> max_time <- 4
+> max_time_days <- max_time * 365.241
+> year.start_min <- 2008
+> year.start_max <- 2010
+> prop_female <- 0
+> N_files <- 100
+> 
+> #lambda/borne_a pairs
+> scenarios <- data.frame(
++   lambda = c(0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
++   borne_a = c(Inf, Inf, 30, 12, 5, 3, 2)
++ )
+> 
+> set.seed(12345)
+> 
+> all_metrics <- list()
+> 
+> #reconciles the output directory
+> if(!dir.exists("outputs/tables")) dir.create("outputs/tables", recursive = TRUE)
+> 
+> start <- proc.time()
+> 
+> 
+> #cycles through each scenario
+> for (k in 1:nrow(scenarios)) {
++ lambda_scenario <- scenarios$lambda[k]
++ borne_a_scenario <- scenarios$borne_a[k]
++ cat(sprintf("scenario %d/%d: lambda = %.2f, borne_a = %.0f\n", k, nrow(scenarios), lambda_scenario, borne_a_scenario))
++ 
++ results_scenarios <- vector("list", N_files)
++ df <- vector("list", N_files)
++ 
++ # cycles an inner loop through N_files datasets
++ for (j in 1:N_files) {
++   df[[j]] <- generate_data(
++     lambda = lambda_scenario,     
++     age_option = age_option,   
++     n = n_patients,        
++     max_time = max_time, 
++     prop_female = prop_female,     
++     year.start_min = year.start_min, 
++     year.start_max = year.start_max,
++     beta_sex = beta_sex,         
++     beta_age = beta_age, 
++     borne_a = borne_a_scenario         
++   )
++   results_scenarios[[j]] <- analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
++ }
++ 
++ # calculates aggregate Bias, RMSE, and ECR of all datasets
++ all_metrics[[k]] <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario)
++ }
+scenario 1/7: lambda = 0.05, borne_a = Inf
+scenario 2/7: lambda = 0.10, borne_a = Inf
+scenario 3/7: lambda = 0.20, borne_a = 30
+scenario 4/7: lambda = 0.30, borne_a = 12
+scenario 5/7: lambda = 0.50, borne_a = 5
+scenario 6/7: lambda = 1.00, borne_a = 3
+scenario 7/7: lambda = 1.50, borne_a = 2
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+322.951   4.096 338.224 
+> 
+> # stacks each scenario in one df
+> final_results <- do.call(rbind, all_metrics)
+> final_results
+   lambda pct_cancer time_t         bias        rmse  ecr
+1    0.05   0.148140      1  0.002727888 0.008625444 0.92
+2    0.05   0.148140      2  0.009136776 0.014362712 0.90
+3    0.05   0.148140      3  0.015562795 0.020919028 0.84
+4    0.10   0.271030      1  0.006611382 0.011451625 0.89
+5    0.10   0.271030      2  0.011324425 0.017599821 0.84
+6    0.10   0.271030      3  0.015773587 0.022291490 0.81
+7    0.20   0.436160      1  0.004301753 0.011852567 0.94
+8    0.20   0.436160      2  0.008722883 0.018305136 0.84
+9    0.20   0.436160      3  0.011553948 0.020598838 0.83
+10   0.30   0.521160      1  0.004050590 0.012668297 0.92
+11   0.30   0.521160      2  0.006356557 0.015695965 0.92
+12   0.30   0.521160      3  0.006269699 0.015954442 0.93
+13   0.50   0.561920      1  0.003702623 0.014176948 0.91
+14   0.50   0.561920      2  0.004144625 0.015933688 0.93
+15   0.50   0.561920      3  0.007426583 0.016640814 0.92
+16   1.00   0.642985      1  0.002328993 0.014210019 0.93
+17   1.00   0.642985      2  0.001625720 0.011982661 0.97
+18   1.00   0.642985      3 -0.001580516 0.020619995 0.85
+19   1.50   0.655765      1  0.001280598 0.011743472 0.97
+20   1.50   0.655765      2  0.005882970 0.018269662 0.88
+21   1.50   0.655765      3  0.044705801 0.047934727 0.06
+> rm(list=ls())
+> #Simulation Metrics Loop (run last)
+> 
+> library(survival)
+> library(relsurv)
+> 
+> source("generate_dataModified_ng.R")
+> source("analyze_one_ng.R")
+> source("compute_metrics.R")
+> 
+> # --- 0. Parameters --- ####
+> n_patients <- 2000
+> age_option <- "A"
+> #lambda <- 0.01 
+> beta_age <- 0.02
+> beta_sex <- 0
+> max_time <- 4
+> max_time_days <- max_time * 365.241
+> year.start_min <- 2008
+> year.start_max <- 2010
+> prop_female <- 0
+> N_files <- 100
+> 
+> #lambda/borne_a pairs
+> scenarios <- data.frame(
++   lambda = c(0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
++   borne_a = c(Inf, Inf, 30, 12, 5, 3, 2)
++ )
+> 
+> set.seed(12345)
+> 
+> all_metrics <- list()
+> 
+> #reconciles the output directory
+> if(!dir.exists("outputs/tables")) dir.create("outputs/tables", recursive = TRUE)
+> 
+> start <- proc.time()
+> 
+> 
+> #cycles through each scenario
+> for (k in 1:nrow(scenarios)) {
++ lambda_scenario <- scenarios$lambda[k]
++ borne_a_scenario <- scenarios$borne_a[k]
++ cat(sprintf("scenario %d/%d: lambda = %.2f, borne_a = %.0f\n", k, nrow(scenarios), lambda_scenario, borne_a_scenario))
++ 
++ results_scenarios <- vector("list", N_files)
++ df <- vector("list", N_files)
++ 
++ # cycles an inner loop through N_files datasets
++ for (j in 1:N_files) {
++   df[[j]] <- generate_data(
++     lambda = lambda_scenario,     
++     age_option = age_option,   
++     n = n_patients,        
++     max_time = max_time, 
++     prop_female = prop_female,     
++     year.start_min = year.start_min, 
++     year.start_max = year.start_max,
++     beta_sex = beta_sex,         
++     beta_age = beta_age, 
++     borne_a = borne_a_scenario         
++   )
++   results_scenarios[[j]] <- analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
++ }
++ 
++ # calculates aggregate Bias, RMSE, and ECR of all datasets
++ all_metrics[[k]] <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario)
++ }
+scenario 1/7: lambda = 0.05, borne_a = Inf
+scenario 2/7: lambda = 0.10, borne_a = Inf
+scenario 3/7: lambda = 0.20, borne_a = 30
+scenario 4/7: lambda = 0.30, borne_a = 12
+scenario 5/7: lambda = 0.50, borne_a = 5
+scenario 6/7: lambda = 1.00, borne_a = 3
+scenario 7/7: lambda = 1.50, borne_a = 2
+> 
+> elapsed <- proc.time() - start
+> elapsed
+   user  system elapsed 
+342.892   4.965 367.225 
+> 
+> # stacks each scenario in one df
+> final_results <- do.call(rbind, all_metrics)
+> final_results
+
+#without gemini corrections
+   lambda pct_cancer time_t         bias        rmse  ecr
+1    0.05   0.148255      1 0.0063121454 0.009765414 0.92
+2    0.05   0.148255      2 0.0109061371 0.016984982 0.82
+3    0.05   0.148255      3 0.0167644214 0.022473606 0.76
+4    0.10   0.270480      1 0.0052878674 0.010018640 0.94
+5    0.10   0.270480      2 0.0127848090 0.018134456 0.85
+6    0.10   0.270480      3 0.0168367001 0.021864541 0.83
+7    0.20   0.436335      1 0.0043593963 0.011836356 0.93
+8    0.20   0.436335      2 0.0078678434 0.016038616 0.92
+9    0.20   0.436335      3 0.0112488711 0.019364647 0.90
+10   0.30   0.519115      1 0.0034497988 0.012148578 0.92
+11   0.30   0.519115      2 0.0078043845 0.016345799 0.91
+12   0.30   0.519115      3 0.0118225861 0.020483765 0.87
+13   0.50   0.563370      1 0.0051602636 0.013155538 0.96
+14   0.50   0.563370      2 0.0066412326 0.016150998 0.94
+15   0.50   0.563370      3 0.0050652766 0.015068332 0.97
+16   1.00   0.641440      1 0.0045146403 0.013341931 0.95
+17   1.00   0.641440      2 0.0033063851 0.013603781 0.92
+18   1.00   0.641440      3 0.0039610187 0.020443063 0.82
+19   1.50   0.657795      1 0.0029506494 0.013005489 0.93
+20   1.50   0.657795      2 0.0009645201 0.017922211 0.87
+21   1.50   0.657795      3 0.0398091533 0.043646814 0.07
+
+## with gemini corrections INTRA YEAR HAZARD ONLY
+   lambda pct_cancer time_t          bias        rmse  ecr
+1    0.05   0.148130      1  0.0027265409 0.008624593 0.92
+2    0.05   0.148130      2  0.0091295368 0.014341266 0.90
+3    0.05   0.148130      3  0.0155517048 0.020961278 0.83
+4    0.10   0.270945      1  0.0065896776 0.011443045 0.88
+5    0.10   0.270945      2  0.0113536531 0.017609631 0.83
+6    0.10   0.270945      3  0.0157293503 0.022262585 0.83
+7    0.20   0.436230      1  0.0043439175 0.011908459 0.94
+8    0.20   0.436230      2  0.0086688449 0.018317707 0.84
+9    0.20   0.436230      3  0.0115549217 0.020634312 0.84
+10   0.30   0.521165      1  0.0040765525 0.012721406 0.92
+11   0.30   0.521165      2  0.0063891659 0.015716961 0.92
+12   0.30   0.521165      3  0.0063160494 0.015946568 0.93
+13   0.50   0.561955      1  0.0037086938 0.014164705 0.91
+14   0.50   0.561955      2  0.0041023292 0.015948051 0.93
+15   0.50   0.561955      3  0.0073396032 0.016637482 0.92
+16   1.00   0.642965      1  0.0023486644 0.014190180 0.93
+17   1.00   0.642965      2  0.0015347702 0.012003422 0.96
+18   1.00   0.642965      3 -0.0007493073 0.019710220 0.84
+19   1.50   0.655730      1  0.0012217744 0.011800543 0.97
+20   1.50   0.655730      2  0.0057811070 0.018202950 0.88
+21   1.50   0.655730      3  0.0446258102 0.047847651 0.04
+
+
+## with gemini corrections INTRA YEAR HAZARD and CENTERED AGE  
+   lambda pct_cancer time_t         bias        rmse  ecr
+1    0.05   0.148140      1  0.002727888 0.008625444 0.92
+2    0.05   0.148140      2  0.009136776 0.014362712 0.90
+3    0.05   0.148140      3  0.015562795 0.020919028 0.84
+4    0.10   0.271030      1  0.006611382 0.011451625 0.89
+5    0.10   0.271030      2  0.011324425 0.017599821 0.84
+6    0.10   0.271030      3  0.015773587 0.022291490 0.81
+7    0.20   0.436160      1  0.004301753 0.011852567 0.94
+8    0.20   0.436160      2  0.008722883 0.018305136 0.84
+9    0.20   0.436160      3  0.011553948 0.020598838 0.83
+10   0.30   0.521160      1  0.004050590 0.012668297 0.92
+11   0.30   0.521160      2  0.006356557 0.015695965 0.92
+12   0.30   0.521160      3  0.006269699 0.015954442 0.93
+13   0.50   0.561920      1  0.003702623 0.014176948 0.91
+14   0.50   0.561920      2  0.004144625 0.015933688 0.93
+15   0.50   0.561920      3  0.007426583 0.016640814 0.92
+16   1.00   0.642985      1  0.002328993 0.014210019 0.93
+17   1.00   0.642985      2  0.001625720 0.011982661 0.97
+18   1.00   0.642985      3 -0.001580516 0.020619995 0.85
+19   1.50   0.655765      1  0.001280598 0.011743472 0.97
+20   1.50   0.655765      2  0.005882970 0.018269662 0.88
+21   1.50   0.655765      3  0.044705801 0.047934727 0.06
