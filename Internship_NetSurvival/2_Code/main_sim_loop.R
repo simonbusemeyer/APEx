@@ -4,7 +4,7 @@ rm(list=ls())
 library(survival)
 library(relsurv)
 
-source("generate_dataModified_ng.R")
+source("generate_dataModified_ng_corrections.R")
 source("analyze_one_ng.R")
 source("compute_metrics.R")
 
@@ -19,7 +19,7 @@ max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 100
+N_files <- 10
 
 #lambda/borne_a pairs
 scenarios <- data.frame(
@@ -36,9 +36,9 @@ if(!dir.exists("outputs/tables")) dir.create("outputs/tables", recursive = TRUE)
 
 start <- proc.time()
 
-k <- 7
+
 #cycles through each scenario
-# for (k in 1:nrow(scenarios)) {
+for (k in 1:nrow(scenarios)) {
 lambda_scenario <- scenarios$lambda[k]
 borne_a_scenario <- scenarios$borne_a[k]
 cat(sprintf("scenario %d/%d: lambda = %.2f, borne_a = %.0f\n", k, nrow(scenarios), lambda_scenario, borne_a_scenario))
@@ -63,9 +63,9 @@ for (j in 1:N_files) {
   results_scenarios[[j]] <- analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
 }
 
-# calculates aggregate Bias, RMSE, and ECR of all datasets '.
+# calculates aggregate Bias, RMSE, and ECR of all datasets
 all_metrics[[k]] <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario)
-# }
+}
 
 elapsed <- proc.time() - start
 elapsed
