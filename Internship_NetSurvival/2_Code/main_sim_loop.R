@@ -1,3 +1,4 @@
+rm(list=ls())
 #Simulation Metrics Loop (run last)
 
 library(survival)
@@ -18,7 +19,7 @@ max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 20
+N_files <- 100
 
 #lambda/borne_a pairs
 scenarios <- data.frame(
@@ -26,7 +27,7 @@ scenarios <- data.frame(
   borne_a = c(Inf, Inf, 30, 12, 5, 3, 2)
 )
 
-
+set.seed(12345)
 
 all_metrics <- list()
 
@@ -35,35 +36,36 @@ if(!dir.exists("outputs/tables")) dir.create("outputs/tables", recursive = TRUE)
 
 start <- proc.time()
 
+k <- 7
 #cycles through each scenario
-for (k in 1:nrow(scenarios)) {
-  lambda_scenario <- scenarios$lambda[k]
-  borne_a_scenario <- scenarios$borne_a[k]
-  cat(sprintf("scenario %d/%d: lambda = %.2f, borne_a = %.0f\n", k, nrow(scenarios), lambda_scenario, borne_a_scenario))
-  
-  results_scenarios <- vector("list", N_files)
-  
-  # cycles an inner loop through N_files datasets
-  for (j in 1:N_files) {
-    df <- generate_data(
-      lambda = lambda_scenario,     
-      age_option = age_option,   
-      n = n_patients,        
-      max_time = max_time, 
-      prop_female = prop_female,     
-      year.start_min = year.start_min, 
-      year.start_max = year.start_max,
-      beta_sex = beta_sex,         
-      beta_age = beta_age, 
-      borne_a = borne_a_scenario         
-    )
-    
-    results_scenarios[[j]] <- analyze_one(df, lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
-  }
-  
-  # calculates aggregate Bias, RMSE, and ECR of all datasets
-  all_metrics[[k]] <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario)
+# for (k in 1:nrow(scenarios)) {
+lambda_scenario <- scenarios$lambda[k]
+borne_a_scenario <- scenarios$borne_a[k]
+cat(sprintf("scenario %d/%d: lambda = %.2f, borne_a = %.0f\n", k, nrow(scenarios), lambda_scenario, borne_a_scenario))
+
+results_scenarios <- vector("list", N_files)
+df <- vector("list", N_files)
+
+# cycles an inner loop through N_files datasets
+for (j in 1:N_files) {
+  df[[j]] <- generate_data(
+    lambda = lambda_scenario,     
+    age_option = age_option,   
+    n = n_patients,        
+    max_time = max_time, 
+    prop_female = prop_female,     
+    year.start_min = year.start_min, 
+    year.start_max = year.start_max,
+    beta_sex = beta_sex,         
+    beta_age = beta_age, 
+    borne_a = borne_a_scenario         
+  )
+  results_scenarios[[j]] <- analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
 }
+
+# calculates aggregate Bias, RMSE, and ECR of all datasets '.
+all_metrics[[k]] <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario)
+# }
 
 elapsed <- proc.time() - start
 elapsed
