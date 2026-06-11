@@ -40,7 +40,7 @@ calibrate_censoring_grid <- function(lambdas, n_patients, max_time_days, beta_ag
         
         # Extract metrics per dataset
         censoring_rates[i] <- mean(df$event_type == "censored")
-        pct_cancer_rates[i]  <- mean(df$event_type == "cancer")
+        pct_cancer <- mean(df$event_type[df$status == 1] == "cancer")
       }
       
       # 2. Compute mean rates across the datasets
