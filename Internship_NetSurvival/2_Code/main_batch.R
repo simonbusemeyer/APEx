@@ -31,11 +31,11 @@ start <- proc.time()
 # Each sourced file will run its loop and save an .rds file to outputs/tables/
 source("lambda batch/lambda_0.05_sim.R")
 source("lambda batch/lambda_0.10_sim.R")
-#source("lambda_0.20_sim.R")
-#source("lambda_0.30_sim.R")
-#source("lambda_0.50_sim.R")
-#source("lambda_1.00_sim.R")
-#source("lambda_1.50_sim.R")
+source("lambda batch/lambda_0.20_sim.R")
+source("lambda batch/lambda_0.30_sim.R")
+source("lambda batch/lambda_0.50_sim.R")
+source("lambda batch/lambda_0.1.00_sim.R")
+source("lambda batch/lambda_1.50_sim.R")
 
 elapsed <- proc.time() - start
 print(elapsed)
