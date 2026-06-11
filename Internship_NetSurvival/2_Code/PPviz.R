@@ -1,53 +1,29 @@
 # ---------------------------------------------------------
 # 5. VISUALIZING POHAR-PERME VS THEORETICAL
-# Standalone execution adapted for 1 value of lambda
+# Fast execution leveraging pre-generated batch outputs
 # ---------------------------------------------------------
 library(survival)
 library(relsurv)
 
-# Source data generation 
-source("generate_dataModified_ng.R")
-
-message("Setting up parameters and generating data for all simulations. This may take a moment...")
-
-# --- 0. Global Parameters ---
-n_patients <- 2000
-age_option <- "A"
+# --- 0. Parameters (Must match the target scenario) ---
+lambda_scenario <- 0.05
+max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
-max_time <- 4
-max_time_days <- max_time * 365.241
-year.start_min <- 2008
-year.start_max <- 2010
-prop_female <- 0
-N_files <- 100
-N_plot <- 25 # Number of curves to randomly sample for the plot
+N_plot <- 3 
 
-# Select 1 value of lambda
-lambda_scenario <- 0.05
-borne_a_scenario <- Inf
+# --- 1. Load Data from Batch Output folder ---
+data_path <- sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario)
 
-# --- 1. Generate & Pool Data for all N_files ---
-set.seed(12345)
-df_list <- vector("list", N_files)
-
-for (j in 1:N_files) {
-  df_list[[j]] <- generate_data(
-    lambda = lambda_scenario,     
-    age_option = age_option,   
-    n = n_patients,        
-    max_time = max_time, 
-    prop_female = prop_female,     
-    year.start_min = year.start_min, 
-    year.start_max = year.start_max,
-    beta_sex = beta_sex,         
-    beta_age = beta_age, 
-    borne_a = borne_a_scenario         
-  )
-  # Add tracking ID for random sampling later
-  df_list[[j]]$sim_id <- j 
+if (!file.exists(data_path)) {
+  stop(sprintf("Batch data file %s not found! Run main_batch.R first.", data_path))
 }
-all_simulated_data <- do.call(rbind, df_list)
+
+message("Loading pre-generated cohort data...")
+all_simulated_data <- readRDS(data_path)
+
+# Extract N_files dynamically based on the data
+N_files <- max(all_simulated_data$sim_id)
 
 # --- 1.5 Convert Time Units to Days for relsurv ---
 all_simulated_data$age_days <- all_simulated_data$age * 365.241
@@ -60,7 +36,6 @@ survtheo <- function(t, lambda, beta_sex, beta_age, sex, ageCentre) {
 
 t_seq_years <- seq(0, max_time, by = 0.1)
 
-# Averages over the full pooled simulated cohort
 surv_theo_matrix <- sapply(1:nrow(all_simulated_data), function(i) {
   survtheo(
     t         = t_seq_years,
@@ -73,7 +48,7 @@ surv_theo_matrix <- sapply(1:nrow(all_simulated_data), function(i) {
 })
 surv_theo_mean <- rowMeans(surv_theo_matrix)
 
-# --- 3. Calculate Pooled Pohar-Perme (All N_files) ---
+# --- 3. Calculate Pooled Pohar-Perme (All N_files pooled) ---
 pp_pooled <- rs.surv(
   Surv(observed_time_days, status) ~ 1,
   data = all_simulated_data,
@@ -86,7 +61,7 @@ pp_pooled <- rs.surv(
 plot(
   0, type = "n",
   xlim = c(0, max_time),
-  ylim = c(0.7, 1), # Adjusted lower bound to reasonably fit lambda=0.05
+  ylim = c(0.7, 1), 
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
   main = paste0("Net Survival: PP vs Theoretical (\u03bb = ", lambda_scenario, ")\n",
@@ -95,13 +70,12 @@ plot(
 grid()
 
 # --- 5. Plot a Random Sample of Individual Pohar-Perme Curves ---
-set.seed(42) # Reproducible sample mapping
+set.seed(42) 
 sampled_sims <- sample(1:N_files, N_plot)
 
 for (i in sampled_sims) {
   data_sim <- subset(all_simulated_data, sim_id == i)
   
-  # Safety check to ensure the subset isn't empty before fitting
   if(nrow(data_sim) > 0) {
     pp_sim <- rs.surv(
       Surv(observed_time_days, status) ~ 1,
@@ -110,8 +84,6 @@ for (i in sampled_sims) {
       rmap = list(age = age_days, sex = sex, year = year_diagnosis),
       method = "pohar-perme"
     )
-    
-    # Individual PP curves in faint blue
     lines(pp_sim$time / 365.241, pp_sim$surv, col = rgb(0.2, 0.5, 0.8, alpha = 0.3), lwd = 1, type = "s")
   }
 }

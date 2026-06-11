@@ -24,8 +24,18 @@ for (j in 1:N_files) {
     beta_age = beta_age, 
     borne_a = borne_a_scenario         
   )
+  
+  # --- CHANGED: Assign simulation ID for downstream visualization subsetting ---
+  df[[j]]$sim_id <- j
+  
   results_scenarios[[j]] <- analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
 }
+
+# --- CHANGED: Save the aggregated raw cohort data to disk ---
+if(!dir.exists("outputs/data")) dir.create("outputs/data", recursive = TRUE)
+all_scenario_data <- do.call(rbind, df)
+saveRDS(all_scenario_data, file = sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario))
+# -----------------------------------------------------------
 
 # Calculate metrics and save independently
 metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)
