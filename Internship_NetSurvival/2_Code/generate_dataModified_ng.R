@@ -32,9 +32,14 @@ generate_data <- function(lambda,
     stop("age_option must be 'A', 'C', or 'D'")
   }
   
-  ageMoyen <- mean(age)
+  #ageMoyen <- mean(age)
   # ageStand <- (age - ageMoyen) / sd(age)
-  ageCentre <- (age - ageMoyen)
+  #ageCentre <- (age - ageMoyen)
+  theoretical_mean <- switch(age_option,
+                             "A" = 84.5, # (80+89)/2
+                             "C" = 27.0, # (15+39)/2
+                             "D" = 62.0) # (50+74)/2
+  ageCentre <- age - theoretical_mean #shouldn't we use the theoretical mean?
   
   uSex <- runif(n)
   pFem <- prop_female

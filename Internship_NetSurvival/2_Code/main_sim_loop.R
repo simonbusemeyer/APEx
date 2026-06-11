@@ -4,7 +4,7 @@ rm(list=ls())
 library(survival)
 library(relsurv)
 
-source("generate_dataModified_ng_corrections.R")
+source("generate_dataModified_ng.R")
 source("analyze_one_ng.R")
 source("compute_metrics.R")
 
@@ -23,7 +23,7 @@ N_files <- 1000
 
 #lambda/borne_a pairs
 scenarios <- data.frame(
-  lambda = c(0.02, 0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
+  lambda = c(0.05, 0.10, 0.20, 0.30, 0.50, 1.00, 1.50),
   borne_a = c(Inf, Inf, Inf, 30, 12, 5, 3, 2)
 )
 

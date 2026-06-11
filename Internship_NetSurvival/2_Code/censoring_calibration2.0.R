@@ -1,6 +1,8 @@
-# censoring_calibration.R
 
-calibrate_censoring_grid <- function(lambdas, n_patients, max_time_days, beta_age, n_pilots = 1) {
+# censoring_calibration.R
+source("generate_dataModified_ng.R")
+
+calibrate_censoring_grid <- function(lambdas, n_patients, max_time_days, beta_age, n_pilots = 1, max_iter = 50) {
   # Dataframe to store calibration results and pilot metrics
   calibration_results <- data.frame(
     lambda = numeric(),
@@ -15,6 +17,7 @@ calibrate_censoring_grid <- function(lambdas, n_patients, max_time_days, beta_ag
     current_borne_a <- max_time_days
     calibrated <- FALSE
     iteration <- 1
+    step_count <- 1 # Internal counter for the fail-safe
     
     while (!calibrated) {
       censoring_rates <- numeric(n_pilots)
@@ -69,6 +72,24 @@ calibrate_censoring_grid <- function(lambdas, n_patients, max_time_days, beta_ag
         cat(sprintf("Success: Lambda = %.2f | borne_a = %7.1f | Censoring = %4.1f%% | Cancer = %4.1f%% | (Iterations: %d)\n", 
                     lam, current_borne_a, mean_censoring * 100, mean_cancer * 100, iteration))
       }
+      
+      # 4. FAIL-SAFE: Break if max iterations reached without calibrating
+      if (!calibrated && step_count >= max_iter) {
+        cat(sprintf("Failed to converge: Lambda = %.2f | Iteration limit reached. Returning borne_a = Inf\n", lam))
+        
+        calibration_results <- rbind(
+          calibration_results, 
+          data.frame(
+            lambda = lam, 
+            calibrated_borne_a = Inf, 
+            observed_censoring_rate = mean_censoring, # Logs the closest it got
+            pct_cancer_pilot = mean_cancer
+          )
+        )
+        break # Exits the while loop, moves to next lambda
+      }
+      
+      step_count <- step_count + 1
     }
   }
   
