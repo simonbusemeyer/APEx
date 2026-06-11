@@ -5,7 +5,7 @@ library(data.table)
 
 # --- Scenario Parameters ---
 lambda_scenario <- 1.00
-borne_a_scenario <- Inf
+borne_a_scenario <- 3
 
 cat(sprintf("Running scenario: lambda = %.2f, borne_a = %.0f\n", lambda_scenario, borne_a_scenario))
 results_scenarios <- vector("list", N_files)
