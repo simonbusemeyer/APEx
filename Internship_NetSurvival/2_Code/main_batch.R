@@ -18,9 +18,9 @@ max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 1000
+N_files <- 100
 
-set.seed(12345)
+#set.seed(12345)
 
 # Reconcile output directory
 if(!dir.exists("outputs/tables")) dir.create("outputs/tables", recursive = TRUE)
@@ -29,13 +29,13 @@ start <- proc.time()
 
 # --- 1. Execute Scenarios --- ####
 # Each sourced file will run its loop and save an .rds file to outputs/tables/
-source("lambda_0.05_sim.R")
-source("lambda_0.10_sim.R")
-source("lambda_0.20_sim.R")
-source("lambda_0.30_sim.R")
-source("lambda_0.50_sim.R")
-source("lambda_1.00_sim.R")
-source("lambda_1.50_sim.R")
+source("lambda batch/lambda_0.05_sim.R")
+source("lambda batch/lambda_0.10_sim.R")
+#source("lambda_0.20_sim.R")
+#source("lambda_0.30_sim.R")
+#source("lambda_0.50_sim.R")
+#source("lambda_1.00_sim.R")
+#source("lambda_1.50_sim.R")
 
 elapsed <- proc.time() - start
 print(elapsed)

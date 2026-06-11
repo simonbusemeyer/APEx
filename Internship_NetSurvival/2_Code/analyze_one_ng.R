@@ -2,8 +2,6 @@
 # analyze_one.R
 # =============================================================================
 
-
-
 analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
   
   # 1. Convert analysis times from years to days
@@ -19,16 +17,12 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
     add.times = times_days
   )
   
-  #plot(pp_fit)
+  plot(pp_fit)
   
   pp_summary <- summary(pp_fit, times = times_days, extend = TRUE) 
   net_surv_pp    <- pp_summary$surv
   net_surv_lower <- pp_summary$lower
   net_surv_upper <- pp_summary$upper
-  
-  # net_surv_theo <- sapply(times_days, function(t) {
-  #   mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))
-  # })
   
   net_surv_theo <- function(t){
     mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))
@@ -38,6 +32,7 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
   diff       <- net_surv_pp - net_surv_theo_3points
   covered    <- (net_surv_lower <= net_surv_theo_3points) & (net_surv_theo_3points <= net_surv_upper)
   pct_cancer <- mean(df$event_type == "cancer")
+  cens_rate  <- mean(df$status == 0) # <--- NEW LINE: compute the censoring rate dynamically
   
   res <- data.frame(
     time       = times_years,
@@ -47,7 +42,8 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
     net_surv_theo     = net_surv_theo_3points,
     diff       = diff,
     covered    = covered,
-    pct_cancer = pct_cancer
+    pct_cancer = pct_cancer,
+    cens_rate  = cens_rate
   )
   
   return(res)

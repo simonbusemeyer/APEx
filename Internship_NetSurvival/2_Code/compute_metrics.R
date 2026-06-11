@@ -3,7 +3,7 @@
 # =============================================================================
 
 #combine J dfs
-compute_metrics <- function(results_list, lambda_val){
+compute_metrics <- function(results_list, lambda_val, borne_a_val){
   all_res <- do.call(rbind, results_list)
   
 #check for time points  
@@ -13,6 +13,8 @@ compute_metrics <- function(results_list, lambda_val){
   #create the metrics df
   metrics <- data.frame(
     lambda = lambda_val,
+    borne_a = borne_a_val,
+    censoring_rate = mean(all_res$cens_rate, na.rm = TRUE),
     pct_cancer = mean(all_res$pct_cancer, na.rm = TRUE),
     time_t = times_eval,
     bias = numeric(n_times),

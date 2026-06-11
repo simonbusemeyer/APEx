@@ -1,7 +1,7 @@
 # lambda_0.05_sim.R
 
 # --- Scenario Parameters ---
-lambda_scenario <- 0.05
+lambda_scenario <- 0.10
 borne_a_scenario <- Inf
 
 cat(sprintf("Running scenario: lambda = %.2f, borne_a = %.0f\n", lambda_scenario, borne_a_scenario))
