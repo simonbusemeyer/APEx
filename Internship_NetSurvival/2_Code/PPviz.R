@@ -10,7 +10,7 @@ lambda_scenario <- 0.05
 max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
-N_plot <- 3 
+N_plot <- 4 
 
 # --- 1. Load Data from Batch Output folder ---
 data_path <- sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario)
@@ -65,13 +65,12 @@ plot(
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
   main = paste0("Net Survival: PP vs Theoretical (\u03bb = ", lambda_scenario, ")\n",
-                N_files, " pooled runs | ", N_plot, " random samples plotted")
+                N_files, " pooled runs | First ", N_plot, " samples plotted")
 )
 grid()
 
-# --- 5. Plot a Random Sample of Individual Pohar-Perme Curves ---
-set.seed(42) 
-sampled_sims <- sample(1:N_files, N_plot)
+# --- 5. Plot the First 25 Individual Pohar-Perme Curves ---
+sampled_sims <- 1:N_plot
 
 for (i in sampled_sims) {
   data_sim <- subset(all_simulated_data, sim_id == i)
@@ -96,7 +95,7 @@ lines(t_seq_years, surv_theo_mean, col = "black", lwd = 3, lty = 2)
 legend(
   "bottomleft", 
   legend = c(
-    paste0("Individual PP Estimates (n=", N_plot, ")"), 
+    paste0("Individual PP Estimates (First ", N_plot, ")"), 
     paste0("Pooled PP Estimate (N=", N_files, ")"), 
     "Theoretical Net Survival Curve S(t)"
   ),

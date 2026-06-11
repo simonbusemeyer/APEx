@@ -18,7 +18,7 @@ max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 100
+N_files <- 10
 
 #set.seed(12345)
 
