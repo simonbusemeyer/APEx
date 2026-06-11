@@ -6,7 +6,7 @@ library(survival)
 library(relsurv)
 
 # --- 0. Parameters (Must match the target scenario) ---
-lambda_scenario <- 0.05
+lambda_scenario <- 0.30
 max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
@@ -70,7 +70,7 @@ message("Pooled calculation complete.")
 plot(
   0, type = "n",
   xlim = c(0, max_time),
-  ylim = c(0.7, 1), 
+  ylim = c(0, 1), 
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
   main = paste0("Net Survival: PP vs Theoretical (\u03bb = ", lambda_scenario, ")\n",
