@@ -5,3 +5,5 @@
 .DS_Store
 .quarto
 .positai
+Internship_NetSurvival/2_Code/outputs/data
+*.rds

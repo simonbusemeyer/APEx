@@ -48,7 +48,7 @@ for (j in 1:N_files) {
   # --- 2. Analyze Data in Parallel ---
   # future_lapply automatically distributes the data and execution across CPU cores
   results_scenarios <- future_lapply(1:N_files, function(j) {
-    analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 2, 3))
+    analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 3, 4))
   }, future.seed = TRUE)
   
   # --- 3. Aggregate Data Efficiently ---
