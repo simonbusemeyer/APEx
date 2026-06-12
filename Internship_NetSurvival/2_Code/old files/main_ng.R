@@ -83,7 +83,8 @@ prop_cancer <- lapply(lambdas, function(lam) {
                      beta_sex = 0, beta_age = 0.02, borne_a = Inf)
   data.frame(
     lambda      = lam,
-    prop_cancer = mean(d$cause == 1),
+    prop_cancer = mean(d$cause == 1), #  pct_cancer <- mean(df$event_type[df$status == 1] == "cancer")
+
     cens_rate   = mean(d$status == 0)
   )
 })

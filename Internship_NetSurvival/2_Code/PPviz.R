@@ -6,7 +6,7 @@ library(survival)
 library(relsurv)
 
 # --- 0. Parameters (Must match the target scenario) ---
-lambda_scenario <- 0.30
+lambda_scenario <- 0.02
 max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
@@ -70,11 +70,11 @@ message("Pooled calculation complete.")
 plot(
   0, type = "n",
   xlim = c(0, max_time),
-  ylim = c(0, 1), 
+  ylim = c(0.3, 1), 
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
   main = paste0("Net Survival: PP vs Theoretical (\u03bb = ", lambda_scenario, ")\n",
-                N_files, " pooled runs | First ", N_plot, " samples plotted")
+                N_files, " pooled runs")
 )
 grid()
 
@@ -90,7 +90,7 @@ for (i in sampled_sims) {
       data = data_sim,
       ratetable = survexp.us,
       rmap = list(age = age_days, sex = sex, year = year_diagnosis),
-      method = "pohar-perme"
+      method = "pohar-perme", add.times = c(1,2,3) * 365.241
     )
     lines(pp_sim$time / 365.241, pp_sim$surv, col = rgb(0.2, 0.5, 0.8, alpha = 0.3), lwd = 1, type = "s")
   }
