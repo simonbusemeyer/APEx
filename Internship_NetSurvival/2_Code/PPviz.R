@@ -72,7 +72,7 @@ message("Pooled calculation complete.")
 plot(
   0, type = "n",
   xlim = c(0, max_time),
-  ylim = c(0.3, 1), 
+  ylim = c(0.3, 1.1), 
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
   main = paste0("Net Survival: PP vs Theoretical (\u03bb = ", lambda_scenario, ")\n",
