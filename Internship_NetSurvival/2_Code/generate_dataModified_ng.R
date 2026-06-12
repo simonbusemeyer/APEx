@@ -69,37 +69,35 @@ generate_data <- function(lambda,
   sexNom <- ifelse(sex == 0, "male", "female")
 
   f1 <- function(i) {
-    uAtt <- runif(1)
+    # Instead of drawing a new uniform variable annually, draw a single lifetime survival probability 
+    # for exact continuous inversion.
+    H_target <- -log(runif(1))
+    H_accum <- 0
+    t_years <- 0
     
     i.age <- which(attr(survexp.us, which = "dimnames")[[1]] == trunc(age[i]))
     i.sex <- which(attr(survexp.us, which = "dimnames")[[2]] == sexNom[i])
     i.year <- which(attr(survexp.us, which = "dimnames")[[3]] == format(year.start[i], "%Y"))
     
-    if (length(i.age) == 0 ||
-        length(i.sex) == 0 || length(i.year) == 0) {
-      return(NA)  # Retourner NA si indices invalides
-    }
+    if (length(i.age) == 0 || length(i.sex) == 0 || length(i.year) == 0) return(NA)
     
     max.i.age <- length(attributes(survexp.us)$dimnames[[1]])
     max.i.year <- length(attributes(survexp.us)$dimnames[[3]])
-    TauxAtt[i] <- 1 - exp(-365.241 * survexp.us[i.age, i.sex, i.year])
     
-    if (uAtt <= TauxAtt[i]) {
-      tpsG <- runif(1)
-      tpsGene[i] <- tpsG
-    } else{
-      while (uAtt > TauxAtt[i]) {
-        tpsGene[i] <- tpsGene[i] + 1
-        i.age <- min(i.age + 1, max.i.age) # happy birthday !
-        i.year <- min(i.year + 1, max.i.year) # and one calendar year more...
-        
-        uAtt <- runif(1)
-        TauxAtt[i] <- 1 - exp(-365.241 * survexp.us[i.age, i.sex, i.year])
+    repeat {
+      h_year <- 365.241 * survexp.us[i.age, i.sex, i.year]
+      #if the patient will accumulate more hazard than the random H_target, 
+      #then we calculate the exact time of death within that year
+      if (H_accum + h_year >= H_target) {
+        frac <- (H_target - H_accum) / h_year
+        return(t_years + frac)
       }
-      tpsG <- runif(1)
-      tpsGene[i] <- tpsGene[i] + tpsG
+      
+      H_accum <- H_accum + h_year
+      t_years <- t_years + 1
+      i.age <- min(i.age + 1, max.i.age)
+      i.year <- min(i.year + 1, max.i.year)
     }
-    return(tpsGene[i])
   }
   tpsGene <- sapply(1:n, f1)
   
