@@ -32,7 +32,7 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, 2, 3)) {
   diff       <- net_surv_pp - net_surv_theo_3points
   covered    <- (net_surv_lower <= net_surv_theo_3points) & (net_surv_theo_3points <= net_surv_upper)
   pct_cancer <- mean(df$event_type[df$status == 1] == "cancer")
-  cens_rate  <- mean(df$status == 0) # <--- NEW LINE: compute the censoring rate dynamically
+  cens_rate  <- mean(df$status == 0)
   
   res <- data.frame(
     time       = times_years,

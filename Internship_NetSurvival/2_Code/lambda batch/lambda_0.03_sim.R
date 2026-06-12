@@ -1,11 +1,11 @@
-# lambda_1.00_sim.R
+# lambda_0.03_sim.R
 
 library(future.apply)
 library(data.table)
 
 # --- Scenario Parameters ---
-lambda_scenario <- 1.00
-borne_a_scenario <- 3
+lambda_scenario <- 0.03
+borne_a_scenario <- Inf
 
 cat(sprintf("Running scenario: lambda = %.2f, borne_a = %.0f\n", lambda_scenario, borne_a_scenario))
 results_scenarios <- vector("list", N_files)
@@ -48,7 +48,7 @@ for (j in 1:N_files) {
 # --- 2. Analyze Data in Parallel ---
 # future_lapply automatically distributes the data and execution across CPU cores
 results_scenarios <- future_lapply(1:N_files, function(j) {
-  analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1, 3, 4))
+  analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, times_years = c(1,3, 4))
 }, future.seed = TRUE)
 
 # --- 3. Aggregate Data Efficiently ---

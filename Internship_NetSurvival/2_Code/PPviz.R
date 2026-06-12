@@ -1,18 +1,22 @@
 # ---------------------------------------------------------
-# 5. VISUALIZING POHAR-PERME VS THEORETICAL
-# Fast execution leveraging pre-generated batch outputs
+# VISUALIZING POHAR-PERME VS THEORETICAL
 # ---------------------------------------------------------
 library(survival)
 library(relsurv)
 
+<<<<<<< HEAD
 # --- 0. Parameters (Must match the target scenario) ---
 lambda_scenario <- 0.02
+=======
+# Parameters (Must match the target scenario)
+lambda_scenario <- 1.00
+>>>>>>> e050baf006de756a9f94d6402ad8adb6df18ecc8
 max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
 N_plot <- 15 
 
-# --- 1. Load Data from Batch Output folder ---
+#Load Data from Batch Output folder
 data_path <- sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario)
 
 if (!file.exists(data_path)) {
@@ -25,11 +29,11 @@ all_simulated_data <- readRDS(data_path)
 # Extract N_files dynamically based on the data
 N_files <- max(all_simulated_data$sim_id)
 
-# --- 1.5 Convert Time Units to Days for relsurv ---
+# Convert Time Units to Days for relsurv
 all_simulated_data$age_days <- all_simulated_data$age * 365.241
 all_simulated_data$observed_time_days <- all_simulated_data$observed_time * 365.241
 
-# --- 2. Calculate Theoretical Curve ---
+#Calculate Theoretical Curve
 survtheo <- function(t, lambda, beta_sex, beta_age, sex, ageCentre) {
   exp(-lambda * t * exp(beta_sex * sex + beta_age * ageCentre))
 }
@@ -48,9 +52,7 @@ surv_theo_matrix <- sapply(1:nrow(all_simulated_data), function(i) {
 })
 surv_theo_mean <- rowMeans(surv_theo_matrix)
 
-# --- 3. Calculate Pooled Pohar-Perme (Using a Fast Sub-sample) ---
-# Computing rs.surv on 200,000 rows causes extreme computational overhead.
-# A 15,000 patient sub-sample provides an identical, highly stable pooled estimate instantly.
+# Calculate Pooled Pohar-Perme (Using a Fast Sub-sample)
 
 set.seed(12345)
 fast_pool_idx <- sample(1:nrow(all_simulated_data), size = 15000)
@@ -66,7 +68,7 @@ pp_pooled <- rs.surv(
 )
 message("Pooled calculation complete.")
 
-# --- 4. Plot Setup ---
+#Plot Setup
 plot(
   0, type = "n",
   xlim = c(0, max_time),
@@ -78,7 +80,7 @@ plot(
 )
 grid()
 
-# --- 5. Plot the First 25 Individual Pohar-Perme Curves ---
+# Plot the First Individual Pohar-Perme Curves
 sampled_sims <- 1:N_plot
 
 for (i in sampled_sims) {
@@ -96,11 +98,11 @@ for (i in sampled_sims) {
   }
 }
 
-# --- 6. Overlay Pooled Pohar-Perme & Theoretical Curves ---
+# Overlay Pooled Pohar-Perme & Theoretical Curves
 lines(pp_pooled$time / 365.241, pp_pooled$surv, col = "red", lwd = 3, type = "s")
 lines(t_seq_years, surv_theo_mean, col = "black", lwd = 3, lty = 2)
 
-# --- 7. Comprehensive Legend ---
+#Legend ---
 legend(
   "bottomleft", 
   legend = c(

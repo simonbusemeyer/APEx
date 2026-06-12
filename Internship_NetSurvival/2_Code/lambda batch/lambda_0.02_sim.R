@@ -1,11 +1,11 @@
-# lambda_1.00_sim.R
+# lambda_0.02_sim.R
 
 library(future.apply)
 library(data.table)
 
 # --- Scenario Parameters ---
-lambda_scenario <- 1.00
-borne_a_scenario <- 3
+lambda_scenario <- 0.02
+borne_a_scenario <- Inf
 
 cat(sprintf("Running scenario: lambda = %.2f, borne_a = %.0f\n", lambda_scenario, borne_a_scenario))
 results_scenarios <- vector("list", N_files)
