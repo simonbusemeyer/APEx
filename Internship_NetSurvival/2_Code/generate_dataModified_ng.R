@@ -144,7 +144,7 @@ generate_data <- function(lambda,
   
   result <- data.frame(
     patient_id = 1:n,
-    age = round(age, 1),
+    age = age,
     ageCentre = ageCentre,
     sex_num = sex,
     sex = factor(sexNom, levels = c("male", "female")),
