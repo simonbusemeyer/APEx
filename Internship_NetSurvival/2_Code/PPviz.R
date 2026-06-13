@@ -5,7 +5,7 @@ library(survival)
 library(relsurv)
 
 # Parameters (Must match the target scenario)
-lambda_scenario <- 0.10
+lambda_scenario <- 0.01
 max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
