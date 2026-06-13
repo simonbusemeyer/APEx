@@ -4,9 +4,9 @@ rm(list=ls())
 library(survival)
 library(relsurv)
 
-source("generate_dataModified_ng.R")
-source("analyze_one_ng.R")
-source("compute_metrics.R")
+source("functions/generate_dataModified_ng.R")
+source("functions/analyze_one_ng.R")
+source("functions/compute_metrics.R")
 
 # Global Parameters
 n_patients <- 2000
@@ -18,7 +18,7 @@ max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 1000
+N_files <- 10
 
 #set.seed(12345) #placed inside each scenario instead for better comparison
 
@@ -29,18 +29,18 @@ start <- proc.time()
 
 # Execute Scenarios
 # Each sourced file will run its loop and save an .rds file to outputs/tables/
-source("lambda batch/lambda_0.01_sim.R")#optional
-source("lambda batch/lambda_0.02_sim.R")#optional
-source("lambda batch/lambda_0.03_sim.R")#optional
-source("lambda batch/lambda_0.04_sim.R")#optional
-source("lambda batch/lambda_0.05_sim.R")
-source("lambda batch/lambda_0.07_sim.R") #optional
-source("lambda batch/lambda_0.10_sim.R")
-source("lambda batch/lambda_0.20_sim.R")
-source("lambda batch/lambda_0.30_sim.R")
-source("lambda batch/lambda_0.50_sim.R")
-#source("lambda batch/lambda_1.00_sim.R") #invalid results at time 3,4 due to censoring calibration
-#source("lambda batch/lambda_1.50_sim.R") #invalid results at time 2,3,4 due to censoring calibration
+source("lambda_batch/lambda_0.01_sim.R")#optional
+source("lambda_batch/lambda_0.02_sim.R")#optional
+source("lambda_batch/lambda_0.03_sim.R")#optional
+source("lambda_batch/lambda_0.04_sim.R")#optional
+source("lambda_batch/lambda_0.05_sim.R")
+source("lambda_batch/lambda_0.07_sim.R") #optional
+source("lambda_batch/lambda_0.10_sim.R")
+source("lambda_batch/lambda_0.20_sim.R")
+source("lambda_batch/lambda_0.30_sim.R")
+source("lambda_batch/lambda_0.50_sim.R")
+#source("lambda_batch/lambda_1.00_sim.R") #invalid results at time 3,4 due to censoring calibration
+#source("lambda_batch/lambda_1.50_sim.R") #invalid results at time 2,3,4 due to censoring calibration
 
 elapsed <- proc.time() - start
 print(elapsed)
