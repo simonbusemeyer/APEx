@@ -4,13 +4,8 @@
 library(survival)
 library(relsurv)
 
-<<<<<<< HEAD
-# --- 0. Parameters (Must match the target scenario) ---
-lambda_scenario <- 0.02
-=======
 # Parameters (Must match the target scenario)
-lambda_scenario <- 1.00
->>>>>>> e050baf006de756a9f94d6402ad8adb6df18ecc8
+lambda_scenario <- 0.05
 max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
@@ -58,7 +53,6 @@ set.seed(12345)
 fast_pool_idx <- sample(1:nrow(all_simulated_data), size = 15000)
 data_pooled_fast <- all_simulated_data[fast_pool_idx, ]
 
-message("Computing pooled Pohar-Perme on a 15,000 patient sub-sample...")
 pp_pooled <- rs.surv(
   Surv(observed_time_days, status) ~ 1,
   data = data_pooled_fast,

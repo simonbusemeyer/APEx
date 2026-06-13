@@ -43,12 +43,12 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val){
     metrics$convergence_rate[i] <- mean(!is.na(res_t$diff))
     metrics$failure_rate[i] <- mean(is.na(res_t$diff))
     
-    #Calculate Conditional Metrics
+    #Calculate metrics conditional on successful convergence
     metrics$bias_conditional[i] <- mean(res_t$diff, na.rm = TRUE)
     metrics$rmse_conditional[i] <- sqrt(mean(res_t$diff^2, na.rm = TRUE))
     metrics$ecr_conditional[i] <- mean(res_t$covered, na.rm = TRUE)
     
-    #Calculate Unconditional Coverage where any NA coverage is mathematically evaluated as a failure to cover
+    #Calculate Unconditional Coverage where NA is a failure to cover
     metrics$ecr_unconditional[i] <- sum(res_t$covered %in% TRUE) / nrow(res_t)
   }
   
