@@ -39,8 +39,8 @@ source("lambda batch/lambda_0.10_sim.R")
 source("lambda batch/lambda_0.20_sim.R")
 source("lambda batch/lambda_0.30_sim.R")
 source("lambda batch/lambda_0.50_sim.R")
-#source("lambda batch/lambda_1.00_sim.R")
-#source("lambda batch/lambda_1.50_sim.R")
+#source("lambda batch/lambda_1.00_sim.R") #invalid results at time 3,4 due to censoring calibration
+#source("lambda batch/lambda_1.50_sim.R") #invalid results at time 2,3,4 due to censoring calibration
 
 elapsed <- proc.time() - start
 print(elapsed)

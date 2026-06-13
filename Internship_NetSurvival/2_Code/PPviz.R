@@ -13,16 +13,20 @@ N_plot <- 15
 
 #Load Data from Batch Output folder
 data_path <- sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario)
+metrics_path <- sprintf("outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario)
 
 if (!file.exists(data_path)) {
   stop(sprintf("Batch data file %s not found! Run main_batch.R first.", data_path))
 }
 
-message("Loading pre-generated cohort data...")
 all_simulated_data <- readRDS(data_path)
+metrics_data       <- readRDS(metrics_path)
 
 # Extract N_files dynamically based on the data
 N_files <- max(all_simulated_data$sim_id)
+
+#extract and round pct_cancer
+pct_cancer_viz <- round(metrics_data$pct_cancer[1] * 100, 1)
 
 # Convert Time Units to Days for relsurv
 all_simulated_data$age_days <- all_simulated_data$age * 365.241
@@ -69,13 +73,14 @@ plot(
   ylim = c(0.3, 1.1), 
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
-  main = paste0("Net Survival: PP vs Theoretical (\u03bb = ", lambda_scenario, ")\n",
-                N_files, " pooled runs")
+  main = paste0("Net Survival: PP vs Theoretical \n Proportion of deaths due to cancer: ", pct_cancer_viz, "%")
 )
 grid()
 
-# Plot the First Individual Pohar-Perme Curves
-sampled_sims <- 1:N_plot
+# randomly select 15 individual Pohar-Perme curves
+set.seed(54321)
+unique_sims <- unique(all_simulated_data$sim_id)
+sampled_sims <- sample(unique_sims, size = min(N_plot, length(unique_sims)), replace = FALSE)
 
 for (i in sampled_sims) {
   data_sim <- subset(all_simulated_data, sim_id == i)
@@ -86,7 +91,7 @@ for (i in sampled_sims) {
       data = data_sim,
       ratetable = survexp.us,
       rmap = list(age = age_days, sex = sex, year = year_diagnosis),
-      method = "pohar-perme", add.times = c(1,2,3) * 365.241
+      method = "pohar-perme", add.times = c(1,3,4) * 365.241
     )
     lines(pp_sim$time / 365.241, pp_sim$surv, col = rgb(0.2, 0.5, 0.8, alpha = 0.3), lwd = 1, type = "s")
   }
