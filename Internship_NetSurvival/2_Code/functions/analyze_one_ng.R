@@ -2,7 +2,7 @@
 # analyze_one.R
 # =============================================================================
 
-analyze_one <- function(df, lambda, beta_age, times_years = c(1, 3, 4)) {
+analyze_one <- function(df, lambda, beta_age, times_years = c(1, ceiling((max_time + 1)/2), max_time)) {
   
   # 1. Convert analysis times from years to days
   times_days <- times_years * 365.241

@@ -9,16 +9,16 @@ source("functions/analyze_one_ng.R")
 source("functions/compute_metrics.R")
 
 # Global Parameters
-n_patients <- 20000
+n_patients <- 2000
 age_option <- "E"
 beta_age <- 0.02
 beta_sex <- 0
-max_time <- 4
+max_time <- 10
 max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 1
+N_files <- 100
 
 #set.seed(12345) #placed inside each scenario instead for better comparison
 

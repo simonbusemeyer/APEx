@@ -5,11 +5,11 @@ library(survival)
 library(relsurv)
 
 # Parameters (Must match the target scenario)
-lambda_scenario <- 0.01
-max_time <- 4
+lambda_scenario <- 0.02
+max_time <- 10
 beta_age <- 0.02
 beta_sex <- 0
-N_plot <- 1
+N_plot <- 20
 
 #Load Data from Batch Output folder
 data_path <-
@@ -117,7 +117,7 @@ for (i in sampled_sims) {
         year = year_diagnosis
       ),
       method = "pohar-perme",
-      add.times = c(1, 3, 4) * 365.241
+      add.times = c(1, round((max_time + 1)/2), max_time) * 365.241
     )
     lines(
       pp_sim$time / 365.241,
