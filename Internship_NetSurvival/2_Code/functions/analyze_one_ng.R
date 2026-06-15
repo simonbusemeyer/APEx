@@ -32,6 +32,8 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, 3, 4)) {
   diff       <- net_surv_pp - net_surv_theo_3points
   covered    <- (net_surv_lower <= net_surv_theo_3points) & (net_surv_theo_3points <= net_surv_upper)
   pct_cancer <- mean(df$event_type[df$status == 1] == "cancer")
+  n_deaths_cancer <- sum((df$event_type[df$status == 1] == "cancer"))
+  n_deaths_other <- sum((df$event_type[df$status == 1] == "other"))
   cens_rate  <- mean(df$status == 0)
   
   res <- data.frame(
@@ -42,6 +44,8 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, 3, 4)) {
     net_surv_theo     = net_surv_theo_3points,
     diff       = diff,
     covered    = covered,
+    n_deaths_cancer = n_deaths_cancer,
+    n_deaths_other = n_deaths_other,
     pct_cancer = pct_cancer,
     cens_rate  = cens_rate
   )

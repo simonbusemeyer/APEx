@@ -9,7 +9,7 @@ lambda_scenario <- 0.01
 max_time <- 4
 beta_age <- 0.02
 beta_sex <- 0
-N_plot <- 15
+N_plot <- 1
 
 #Load Data from Batch Output folder
 data_path <-
@@ -67,7 +67,7 @@ surv_theo_mean <- rowMeans(surv_theo_matrix)
 # Calculate Pooled Pohar-Perme (Using a Fast Sub-sample)
 
 set.seed(12345)
-fast_pool_idx <- sample(1:nrow(all_simulated_data), size = 15000)
+fast_pool_idx <- sample(1:nrow(all_simulated_data), size = 20000)
 data_pooled_fast <- all_simulated_data[fast_pool_idx,]
 
 pp_pooled <- rs.surv(
@@ -95,7 +95,7 @@ plot(
 )
 grid()
 
-# randomly select 15 individual Pohar-Perme curves
+# randomly select 20 individual Pohar-Perme curves
 set.seed(54321)
 unique_sims <- unique(all_simulated_data$sim_id)
 sampled_sims <-
@@ -137,6 +137,25 @@ lines(
   lwd = 3,
   type = "s"
 )
+
+# 95% Confidence Intervals
+lines(
+  pp_pooled$time / 365.241,
+  pp_pooled$lower,
+  col = "red",
+  lwd = 1.5,
+  lty = 3, 
+  type = "s"
+)
+lines(
+  pp_pooled$time / 365.241,
+  pp_pooled$upper,
+  col = "red",
+  lwd = 1.5,
+  lty = 3, 
+  type = "s"
+)
+
 lines(
   t_seq_years,
   surv_theo_mean,
@@ -150,7 +169,7 @@ legend(
   "bottomleft",
   legend = c(
     paste0("Individual PP Estimates (First ", N_plot, ")"),
-    paste0("Pooled PP Estimate (N=", N_files, ")"),
+    paste0("Pooled PP Estimate (N=", nrow(data_pooled_fast), ") & 95% CI"),
     "Theoretical Net Survival Curve S(t)"
   ),
   col = c(rgb(0.2, 0.5, 0.8, alpha = 0.5), "red", "black"),

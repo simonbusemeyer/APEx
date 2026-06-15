@@ -27,9 +27,13 @@ generate_data <- function(lambda,
     # Option D: age ~ Uniform[50, 74]
     age <- runif(n, min = 50, max = 74)
     
+  } else if (age_option == "E") {
+    # Option E: age ~ Uniform[50, 59]
+    age <- runif(n, min = 50, max = 59)
+    
   } else {
     # Catch any invalid inputs
-    stop("age_option must be 'A', 'C', or 'D'")
+    stop("age_option must be 'A', 'C', 'D' or 'E'")
   }
   
   #ageMoyen <- mean(age)
@@ -38,7 +42,9 @@ generate_data <- function(lambda,
   theoretical_mean <- switch(age_option,
                              "A" = 84.5, # (80+89)/2
                              "C" = 27.0, # (15+39)/2
-                             "D" = 62.0) # (50+74)/2
+                             "D" = 62.0, # (50+74)/2
+                             "E" = 54.5) # (50+59)/2
+
   ageCentre <- age - theoretical_mean #shouldn't we use the theoretical mean?
   
   uSex <- runif(n)

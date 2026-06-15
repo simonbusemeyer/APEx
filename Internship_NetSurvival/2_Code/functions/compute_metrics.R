@@ -16,6 +16,8 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val){
     borne_a = borne_a_val,
     censoring_rate = mean(all_res$cens_rate, na.rm = TRUE),
     pct_cancer = mean(all_res$pct_cancer, na.rm = TRUE),
+    n_deaths_cancer = mean(all_res$n_deaths_cancer, na.rm = TRUE),
+    n_deaths_other = mean(all_res$n_deaths_other, na.rm = TRUE),
     time_t = times_eval,
     
     # New columns for absolute counts
