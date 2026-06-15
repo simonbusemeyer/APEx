@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 i want to plot all of these overlayed 1) each simulation run 2) the pooled simulations 3) the theoretical survival curve given as S(t) = exp(-lambda * t * exp(beta * Z)).
 
-stochastic process
+###stochastic process
 
 #without gemini corrections 1000 sims
   lambda pct_cancer time_t        bias        rmse   ecr
@@ -91,3 +91,22 @@ stochastic process
 22   1.50  0.6554255      1  0.0008426470 0.012308906 0.948
 23   1.50  0.6554255      2  0.0026245222 0.017619830 0.842
 24   1.50  0.6554255      3  0.0414725401 0.044983889 0.063
+
+### pct_cancer was calculated incorrectly in the above tables
+
+# Covariates
+1. edit the functions so they can handle covariates sex and possibly X/race
+
+# calibration engine
+1. should automatically calculate the appropriate borne_a for all the lambda scenarios and given parameters. then insert them into to the lambda scenarios
+2. should calculate borne_a to control for random (LTFU) censoring only (ignore administrative censoring)?
+
+# follow up time calculation engine
+1. should automatically calculate the appropriate follow up time (max_time) using nessie minimum expected survival.It should automatically insert the computed value in the simulation run.
+2. time point measurements should be updated everywhere automatically. consider taking measurements every 2 years starting at year 1. Also always report measurements at max_time.
+
+#batch refactoring
+1. refactor the lambda batches so its not redundant and wont be necessary to update every lambda scenario file when something changes
+
+#Generalized Weibull data generation
+1. attempt the simulations with accelerated time failure

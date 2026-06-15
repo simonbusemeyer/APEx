@@ -10,10 +10,10 @@ source("functions/compute_metrics.R")
 
 # Global Parameters
 n_patients <- 2000
-age_option <- "A"
+age_option <- "C"
 beta_age <- 0.02
 beta_sex <- 0
-max_time <- 4
+max_time <- 15
 max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
