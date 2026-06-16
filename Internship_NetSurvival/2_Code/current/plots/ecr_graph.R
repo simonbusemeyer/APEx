@@ -1,7 +1,7 @@
 library(tidyverse)
 library(scales)
 
-results_df <- read_csv("outputs/tables/final_results_complete.csv")
+results_df <- read_csv("current/outputs/tables/final_results_complete.csv")
 
 # Convert time_t to a categorical factor for stratification
 results_df <- results_df %>%

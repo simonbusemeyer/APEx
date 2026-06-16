@@ -13,10 +13,10 @@ N_plot <- 20
 
 #Load Data from Batch Output folder
 data_path <-
-  sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds",
+  sprintf("current/outputs/data/simulated_cohort_lambda_%.2f.rds",
           lambda_scenario)
 metrics_path <-
-  sprintf("outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario)
+  sprintf("current/outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario)
 
 if (!file.exists(data_path)) {
   stop(sprintf(
