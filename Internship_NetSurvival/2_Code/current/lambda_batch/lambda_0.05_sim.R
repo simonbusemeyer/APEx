@@ -55,11 +55,11 @@ for (j in 1:N_files) {
   if(!dir.exists("outputs/data")) dir.create("outputs/data", recursive = TRUE)
   
   all_scenario_data <- rbindlist(df)
-  saveRDS(all_scenario_data, file = sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario))
+  saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario))
   
   #Calculate and Save Metrics
   metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)
-  saveRDS(metrics, file = sprintf("outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario))
+  saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario))
   
   # Close parallel
   plan(sequential)

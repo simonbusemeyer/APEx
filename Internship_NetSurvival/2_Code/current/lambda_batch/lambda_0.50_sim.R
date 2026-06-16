@@ -1,11 +1,11 @@
-# lambda_0.20_sim.R
+# lambda_0.50_sim.R
 
 library(future.apply)
 library(data.table)
 
 # --- Scenario Parameters ---
-lambda_scenario <- 0.20
-borne_a_scenario <- 30
+lambda_scenario <- 0.50
+borne_a_scenario <- 5
 
 cat(sprintf("Running scenario: lambda = %.2f, borne_a = %.0f\n", lambda_scenario, borne_a_scenario))
 results_scenarios <- vector("list", N_files)
@@ -52,15 +52,15 @@ results_scenarios <- future_lapply(1:N_files, function(j) {
 }, future.seed = TRUE)
 
 # --- 3. Aggregate Data Efficiently ---
-if(!dir.exists("outputs/data")) dir.create("outputs/data", recursive = TRUE)
+if(!dir.exists("current/outputs/data")) dir.create("current/outputs/data", recursive = TRUE)
 
 # CHANGED: Use data.table::rbindlist instead of do.call(rbind, ...) for exponential speedup
 all_scenario_data <- rbindlist(df)
-saveRDS(all_scenario_data, file = sprintf("outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario))
+saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario))
 
 # --- 4. Calculate and Save Metrics ---
 metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)
-saveRDS(metrics, file = sprintf("outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario))
+saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario))
 
 # Close parallel backend to free up resources
 plan(sequential)
