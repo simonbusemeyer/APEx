@@ -3,58 +3,115 @@ rm(list=ls())
 
 library(survival)
 library(relsurv)
+library(future.apply)
+library(data.table)
 
 source("current/functions/generate_dataModified_ng.R")
 source("current/functions/analyze_one_ng.R")
 source("current/functions/compute_metrics.R")
+source("current/functions/rltf_calibration.R")
+
 
 # Global Parameters
 n_patients <- 2000
-age_option <- "E"
+age_option <- "A"
 beta_age <- 0.02
 beta_sex <- 0
-max_time <- 10
+max_time <- 4
 max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 100
+N_files <- 10
 
-#set.seed(12345) #placed inside each scenario instead for better comparison
+lambdas_to_run <- c(0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.10, 0.20, 0.30, 0.50)
 
-# Reconcile output directory
+# Run the calibration engine to dynamically generate the scenarios dataframe
+scenarios <- calibrate_rltf_grid(
+  lambdas = lambdas_to_run,
+  n_patients = n_patients,
+  max_time = max_time,
+  age_option = age_option,
+  beta_age = beta_age,
+  target_rltf = 0.30, # 30% random loss to follow-up
+  n_pilots = 5        # Adjust based on variance
+)
+
+# Display the calculated scenarios to verify before main execution
+print("=== Final Calibrated Scenarios ===")
+print(scenarios)
+
+# Reconcile output directories
 if(!dir.exists("current/outputs/tables")) dir.create("current/outputs/tables", recursive = TRUE)
+if(!dir.exists("current/outputs/data")) dir.create("current/outputs/data", recursive = TRUE)
 
 start <- proc.time()
 
-# Execute Scenarios
-# Each sourced file will run its loop and save an .rds file to outputs/tables/
-source("current/lambda_batch/lambda_0.01_sim.R")#optional
-source("current/lambda_batch/lambda_0.02_sim.R")#optional
-source("current/lambda_batch/lambda_0.03_sim.R")#optional
-source("current/lambda_batch/lambda_0.04_sim.R")#optional
-source("current/lambda_batch/lambda_0.05_sim.R")
-source("current/lambda_batch/lambda_0.07_sim.R") #optional
-source("current/lambda_batch/lambda_0.10_sim.R")
-source("current/lambda_batch/lambda_0.20_sim.R")
-source("current/lambda_batch/lambda_0.30_sim.R")
-source("current/lambda_batch/lambda_0.50_sim.R")
-#source("lambda_batch/lambda_1.00_sim.R") #invalid results at time 3,4 due to censoring calibration
-#source("lambda_batch/lambda_1.50_sim.R") #invalid results at time 2,3,4 due to censoring calibration
+# Setup parallel backend once for the entire batch
+plan(multisession, workers = availableCores() - 1)
+cat("Total Cores Available:", availableCores(), "\n")
+cat("Active Parallel Workers:", nbrOfWorkers(), "\n")
+
+# Execute Scenarios iteratively
+for (i in seq_len(nrow(scenarios))) {
+  
+  lambda_scenario <- scenarios$lambda[i]
+  borne_a_scenario <- scenarios$borne_a[i]
+  
+  cat(sprintf("\n--- Running scenario %d of %d: lambda = %.2f, borne_a = %.0f ---\n", 
+              i, nrow(scenarios), lambda_scenario, borne_a_scenario))
+  
+  df <- vector("list", N_files)
+  
+  # Set seed per scenario to ensure comparable cohort generation across differing lambdas
+  set.seed(12345) 
+  
+  # 1. Generate Data
+  for (j in 1:N_files) {
+    df[[j]] <- generate_data(
+      lambda = lambda_scenario,     
+      age_option = age_option,   
+      n = n_patients,        
+      max_time = max_time, 
+      prop_female = prop_female,     
+      year.start_min = year.start_min, 
+      year.start_max = year.start_max,
+      beta_sex = beta_sex,         
+      beta_age = beta_age, 
+      borne_a = borne_a_scenario         
+    )
+    df[[j]]$sim_id <- j
+  }
+  
+  # 2. Analyze Data in Parallel
+  results_scenarios <- future_lapply(1:N_files, function(j) {
+    analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, 
+                times_years = c(1, ceiling((max_time + 1)/2), max_time))
+  }, future.seed = TRUE)
+  
+  # 3. Aggregate Data Efficiently
+  all_scenario_data <- rbindlist(df)
+  saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario))
+  
+  # 4. Calculate and Save Metrics
+  metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)
+  saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario))
+}
+
+# Close parallel backend to free up resources
+plan(sequential)
 
 elapsed <- proc.time() - start
+cat("\nTotal execution time:\n")
 print(elapsed)
 
 # Aggregate Results
-# Read all individual scenario outputs and bind them into one dataframe
 rds_files <- list.files("current/outputs/tables", pattern = "metrics_lambda_.*\\.rds$", full.names = TRUE)
 all_metrics_list <- lapply(rds_files, readRDS)
 
 final_results <- do.call(rbind, all_metrics_list)
 
-#Save the finalized bound dataframe
 saveRDS(final_results, "current/outputs/tables/final_results_complete.rds")
-
 write.csv(final_results, 
           file = "current/outputs/tables/final_results_complete.csv", 
           row.names = FALSE)
