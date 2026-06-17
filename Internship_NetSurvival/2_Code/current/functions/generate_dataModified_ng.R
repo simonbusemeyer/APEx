@@ -17,40 +17,69 @@ generate_data <- function(lambda,
   # Covariables generation: Age
   if (age_option == "A") {
     # Option A: age ~ Uniform[80, 89]
-    age <- runif(n, min = 80, max = 89)
+    age <- runif(n, min = 80, max = 89.999)
     
   } else if (age_option == "C") {
     # Option C: age ~ Uniform[15, 39]
-    age <- runif(n, min = 15, max = 39)
+    age <- runif(n, min = 15, max = 39.999)
     
   } else if (age_option == "D") {
     # Option D: age ~ Uniform[50, 74]
-    age <- runif(n, min = 50, max = 74)
+    age <- runif(n, min = 50, max = 74.999)
     
   } else if (age_option == "E") {
     # Option E: age ~ Uniform[50, 59]
-    age <- runif(n, min = 50, max = 59)
+    age <- runif(n, min = 50, max = 59.999)
     
   } else if (age_option == "F") {
     # Option F: age ~ Discrete-Uniform[80, 89]
-    age <- trunc(runif(n, min = 80, max = 89))
+    age <- trunc(runif(n, min = 80, max = 89.999))
+    
+  } else if (age_option == "Luo") {
+    # Option Luo: Empirical distribution from Luo et al. 2023 (Prostate Cancer)
+    # <65 (46.2%), 65-85 (51.9%), >85 (2.0%)
+    u <- runif(n)
+    age <- numeric(n)
+    
+    idx1 <- u <= 0.462
+    idx2 <- u > 0.462 & u <= 0.981
+    idx3 <- u > 0.981
+    
+    # clinical bounds: [50-65), [65-85), [85-95)
+    age[idx1] <- runif(sum(idx1), min = 50, max = 64.999)
+    age[idx2] <- runif(sum(idx2), min = 65, max = 84.999)
+    age[idx3] <- runif(sum(idx3), min = 85, max = 94.999)
+
+  } else if (age_option == "LuoTrunc") {
+    # Option LuoTrunc: Truncated Empirical distribution from Luo et al. 2023 (Prostate Cancer)
+    # trunc(<65 (46.2%), 65-85 (51.9%), >85 (2.0%))
+    u <- runif(n)
+    age <- numeric(n)
+    
+    idx1 <- u <= 0.462
+    idx2 <- u > 0.462 & u <= 0.981
+    idx3 <- u > 0.981
+    
+    # clinical bounds: [50-65), [65-85), [85-95)
+    age[idx1] <- trunc(runif(sum(idx1), min = 50, max = 64.999))
+    age[idx2] <- trunc(runif(sum(idx2), min = 65, max = 84.999))
+    age[idx3] <- trunc(runif(sum(idx3), min = 85, max = 94.999))
     
   } else {
     # Catch any invalid inputs
-    stop("age_option must be 'A', 'C', 'D', 'E' or 'F'")
+    stop("age_option must be 'A', 'C', 'D', 'E', 'F', 'Luo'or 'LuoTrunc'")
   }
   
-  #ageMoyen <- mean(age)
-  # ageStand <- (age - ageMoyen) / sd(age)
-  #ageCentre <- (age - ageMoyen)
   theoretical_mean <- switch(age_option,
                              "A" = 84.5, # (80+89)/2
                              "C" = 27.0, # (15+39)/2
                              "D" = 62.0, # (50+74)/2
                              "E" = 54.5, # (50+59)/2
-                             "F" = 84.5) # (80+89)/2
+                             "F" = 84.5, # (80+89)/2
+                             "Luo" = 67.2,
+                             "LuoTrunc" = 66.7) 
   
-  ageCentre <- age - theoretical_mean #shouldn't we use the theoretical mean?
+  ageCentre <- age - theoretical_mean
   
   uSex <- runif(n)
   pFem <- prop_female

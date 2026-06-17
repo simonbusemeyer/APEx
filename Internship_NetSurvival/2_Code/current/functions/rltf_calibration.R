@@ -62,7 +62,7 @@ calibrate_rltf_grid <- function(lambdas,
         # Target reached
       } else {
         calibrated <- TRUE
-        cat(sprintf("[SUCCESS] Lambda = %.2f | borne_a = %7.2f | Random Censoring = %4.1f%% | (Iters: %d)\n", 
+        cat(sprintf("[SUCCESS] Lambda = %.3f | borne_a = %7.2f | Random Censoring = %4.1f%% | (Iters: %d)\n", 
                     lam, current_borne_a, mean_rltf * 100, iteration))
       }
       
@@ -71,7 +71,7 @@ calibrate_rltf_grid <- function(lambdas,
     
     # Fail-safe message if convergence wasn't reached
     if (!calibrated) {
-      cat(sprintf("[WARNING] Lambda = %.2f | Failed to converge. Closest RLTF = %4.1f%% | Returning borne_a = %.2f\n", 
+      cat(sprintf("[WARNING] Lambda = %.3f | Failed to converge. Closest RLTF = %4.1f%% | Returning borne_a = %.2f\n", 
                   lam, mean_rltf * 100, current_borne_a))
     }
     

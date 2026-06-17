@@ -10,22 +10,31 @@ source("current/functions/generate_dataModified_ng.R")
 source("current/functions/analyze_one_ng.R")
 source("current/functions/compute_metrics.R")
 source("current/functions/rltf_calibration.R")
-
+source("current/functions/nessie.R")
 
 # Global Parameters
 n_patients <- 2000
-age_option <- "A"
+age_option <- "LuoTrunc"
 beta_age <- 0.02
 beta_sex <- 0
-max_time <- 4
-max_time_days <- max_time * 365.241
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
 N_files <- 10
 
-lambdas_to_run <- c(0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.10, 0.20, 0.30, 0.50)
+lambdas_to_run <- c(0.001, 0.003, 0.005, 0.007, 0.01, 0.02, 0.03, 0.04)#, 0.05, 0.07, 0.10, 0.30)
 
+# Calculate max_time
+cat("Calculating dynamic max_time based on population expected survival...\n")
+max_time <- determine_max_time(
+  n_patients = n_patients,
+  age_option = age_option,
+  prop_female = prop_female,
+  year.start_min = year.start_min,
+  year.start_max = year.start_max
+)
+max_time_days <- max_time * 365.241
+cat(sprintf("=> Dynamic max_time set to: %d years\n\n", max_time))
 # Run the calibration engine to dynamically generate the scenarios dataframe
 scenarios <- calibrate_rltf_grid(
   lambdas = lambdas_to_run,
@@ -33,8 +42,8 @@ scenarios <- calibrate_rltf_grid(
   max_time = max_time,
   age_option = age_option,
   beta_age = beta_age,
-  target_rltf = 0.30, # 30% random loss to follow-up
-  n_pilots = 5        # Adjust based on variance
+  target_rltf = 0.20, # target random loss to follow-up
+  n_pilots = 3        # Adjust based on variance
 )
 
 # Display the calculated scenarios to verify before main execution
@@ -58,7 +67,7 @@ for (i in seq_len(nrow(scenarios))) {
   lambda_scenario <- scenarios$lambda[i]
   borne_a_scenario <- scenarios$borne_a[i]
   
-  cat(sprintf("\n--- Running scenario %d of %d: lambda = %.2f, borne_a = %.0f ---\n", 
+  cat(sprintf("\n--- Running scenario %d of %d: lambda = %.3f, borne_a = %.0f ---\n", 
               i, nrow(scenarios), lambda_scenario, borne_a_scenario))
   
   df <- vector("list", N_files)
