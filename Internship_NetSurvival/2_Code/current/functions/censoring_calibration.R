@@ -4,7 +4,7 @@ source("current/functions/generate_dataModified_ng.R")
 calibrate_censoring_grid <- function(lambdas, 
                                      n_patients, 
                                      max_time, 
-                                     age_option = "E", 
+                                     age_option = "Luo", 
                                      beta_age = 0.02, 
                                      target_censoring = 0.30, 
                                      tol = 0.02, 

@@ -16,24 +16,24 @@ generate_data <- function(lambda,
   
   # Covariables generation: Age
   if (age_option == "A") {
-    # Option A: age ~ Uniform[80, 89]
-    age <- runif(n, min = 80, max = 89.999)
+    # Option A: age ~ Uniform[80, 90)
+    age <- runif(n, min = 80, max = 90)
     
   } else if (age_option == "C") {
-    # Option C: age ~ Uniform[15, 39]
-    age <- runif(n, min = 30, max = 40)
+    # Option C: age ~ Uniform[15, 40)
+    age <- runif(n, min = 15, max = 40)
     
   } else if (age_option == "D") {
-    # Option D: age ~ Uniform[50, 74]
-    age <- trunc(runif(n, min = 30, max = 40))
+    # Option D: age ~ Uniform[50, 75)
+    age <- trunc(runif(n, min = 50, max = 75))
     
   } else if (age_option == "E") {
-    # Option E: age ~ Uniform[50, 59]
-    age <- runif(n, min = 50, max = 59.999)
+    # Option E: age ~ Uniform[50, 60)
+    age <- runif(n, min = 50, max = 60)
     
   } else if (age_option == "F") {
-    # Option F: age ~ Discrete-Uniform[80, 89]
-    age <- trunc(runif(n, min = 80, max = 89.999))
+    # Option F: age ~ Discrete-Uniform[80, 90)
+    age <- trunc(runif(n, min = 80, max = 90))
     
   } else if (age_option == "Luo") {
     # Option Luo: Empirical distribution from Luo et al. 2023 (Prostate Cancer)
@@ -46,10 +46,10 @@ generate_data <- function(lambda,
     idx3 <- u > 0.981
     
     # clinical bounds: [50-65), [65-85), [85-95)
-    age[idx1] <- runif(sum(idx1), min = 50, max = 64.999)
-    age[idx2] <- runif(sum(idx2), min = 65, max = 84.999)
-    age[idx3] <- runif(sum(idx3), min = 85, max = 94.999)
-
+    age[idx1] <- runif(sum(idx1), min = 50, max = 65)
+    age[idx2] <- runif(sum(idx2), min = 65, max = 85)
+    age[idx3] <- runif(sum(idx3), min = 85, max = 95)
+    
   } else if (age_option == "LuoTrunc") {
     # Option LuoTrunc: Truncated Empirical distribution from Luo et al. 2023 (Prostate Cancer)
     # trunc(<65 (46.2%), 65-85 (51.9%), >85 (2.0%))
@@ -61,23 +61,52 @@ generate_data <- function(lambda,
     idx3 <- u > 0.981
     
     # clinical bounds: [50-65), [65-85), [85-95)
-    age[idx1] <- trunc(runif(sum(idx1), min = 50, max = 64.999))
-    age[idx2] <- trunc(runif(sum(idx2), min = 65, max = 84.999))
-    age[idx3] <- trunc(runif(sum(idx3), min = 85, max = 94.999))
+    age[idx1] <- trunc(runif(sum(idx1), min = 50, max = 65))
+    age[idx2] <- trunc(runif(sum(idx2), min = 65, max = 85))
+    age[idx3] <- trunc(runif(sum(idx3), min = 85, max = 95))
     
   } else {
     # Catch any invalid inputs
     stop("age_option must be 'A', 'C', 'D', 'E', 'F', 'Luo'or 'LuoTrunc'")
   }
   
-  theoretical_mean <- switch(age_option,
-                             "A" = 84.5, # (80+89)/2
-                             "C" = 35, # (15+39)/2
-                             "D" = 35, # (50+74)/2
-                             "E" = 54.5, # (50+59)/2
-                             "F" = 84.5, # (80+89)/2
-                             "Luo" = 67.2,
-                             "LuoTrunc" = 66.7) 
+  # Dynamic Calculation of Theoretical Means
+  # Define standard bounds for the uniform distributions: c(min, max)
+  bounds <- switch(age_option,
+                   "A"        = c(80, 90),
+                   "C"        = c(15, 40),
+                   "D"        = c(50, 75),
+                   "E"        = c(50, 60),
+                   "F"        = c(80, 90),
+                   "Luo"      = NULL, # Handled separately below
+                   "LuoTrunc" = NULL)
+  
+  if (!is.null(bounds)) {
+    if (age_option %in% c("D", "F")) {
+      # For discrete uniform distributions via trunc(runif(min, max)):
+      # The values are integers from min to (max - 1).
+      # The mean of integers from a to b is (a + b) / 2.
+      theoretical_mean <- (bounds[1] + (bounds[2] - 1)) / 2
+    } else {
+      # For continuous uniform distributions: (min + max) / 2
+      theoretical_mean <- mean(bounds)
+    }
+  } else {
+    # For Luo and LuoTrunc empirical mixture distributions:
+    # Expected value E[X] = sum( P(Interval) * E[X | Interval] )
+    weights <- c(0.462, 0.519, 0.020) # the paper has a rounding error of +0.001
+    
+    if (age_option == "Luo") {
+      # Continuous sub-intervals
+      means <- c(mean(c(50, 65)), mean(c(65, 85)), mean(c(85, 95)))
+    } else if (age_option == "LuoTrunc") {
+      # Truncated (discrete) sub-intervals: trunc(runif(min, max))
+      # Means are calculated using the true integer ranges: [50,64], [65,84], [85,94]
+      means <- c((50 + 64)/2, (65 + 84)/2, (85 + 94)/2)
+    }
+    
+    theoretical_mean <- sum(weights * means)
+  }
   
   ageCentre <- age - theoretical_mean
   
