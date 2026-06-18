@@ -5,18 +5,19 @@ library(survival)
 library(relsurv)
 
 # Parameters (Must match the target scenario)
-lambda_scenario <- 0.001
+lambda_scenario <- 0.015
 max_time <- max_time
 beta_age <- 0.02
 beta_sex <- 0
 N_plot <- 20
 
 #Load Data from Batch Output folder
+#Load Data from Batch Output folder
 data_path <-
-  sprintf("current/outputs/data/simulated_cohort_lambda_%.2f.rds",
+  sprintf("current/outputs/data/simulated_cohort_lambda_%.3f.rds",
           lambda_scenario)
 metrics_path <-
-  sprintf("current/outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario)
+  sprintf("current/outputs/tables/metrics_lambda_%.3f.rds", lambda_scenario)
 
 if (!file.exists(data_path)) {
   stop(sprintf(
@@ -64,20 +65,44 @@ surv_theo_matrix <- sapply(1:nrow(all_simulated_data), function(i) {
 })
 surv_theo_mean <- rowMeans(surv_theo_matrix)
 
-# Calculate Pooled Pohar-Perme (Using a Fast Sub-sample)
+# ---------------------------------------------------------
+# Calculate Mean of Individual Pohar-Perme Estimates
+# ---------------------------------------------------------
+# Define a standard time grid for evaluation matching the theoretical curve
+t_seq_days <- t_seq_years * 365.241
+unique_sims <- unique(all_simulated_data$sim_id)
+n_sims <- length(unique_sims)
 
-set.seed(12345)
-fast_pool_idx <- sample(1:nrow(all_simulated_data), size = 20000)
-data_pooled_fast <- all_simulated_data[fast_pool_idx,]
+# Create a matrix to store survival probabilities (rows = time points, cols = simulations)
+pp_surv_matrix <- matrix(NA, nrow = length(t_seq_days), ncol = n_sims)
 
-pp_pooled <- rs.surv(
-  Surv(observed_time_days, status) ~ 1,
-  data = data_pooled_fast,
-  ratetable = survexp.us,
-  rmap = list(age = age_days, sex = sex, year = year_diagnosis),
-  method = "pohar-perme"
-)
-message("Pooled calculation complete.")
+message("Calculating individual PP curves for the mean estimate...")
+for (i in seq_along(unique_sims)) {
+  data_sim <- subset(all_simulated_data, sim_id == unique_sims[i])
+  
+  if (nrow(data_sim) > 0) {
+    pp_sim <- rs.surv(
+      Surv(observed_time_days, status) ~ 1,
+      data = data_sim,
+      ratetable = survexp.us,
+      rmap = list(age = age_days, sex = sex, year = year_diagnosis),
+      method = "pohar-perme"
+      )
+    
+    # Extract survival probabilities at the exact common time grid
+    pp_summary <- summary(pp_sim, times = t_seq_days, extend = TRUE)
+    pp_surv_matrix[, i] <- pp_summary$surv
+  }
+}
+
+# Calculate the mean of the PP estimates across all simulations
+mean_pp_surv <- rowMeans(pp_surv_matrix, na.rm = TRUE)
+
+# Calculate empirical 95% Confidence Intervals for the mean curve
+se_pp_surv <- apply(pp_surv_matrix, 1, sd, na.rm = TRUE) / sqrt(n_sims)
+lower_pp_surv <- mean_pp_surv - 1.96 * se_pp_surv
+upper_pp_surv <- mean_pp_surv + 1.96 * se_pp_surv
+message("Mean calculation complete.")
 
 #Plot Setup
 plot(
@@ -116,8 +141,7 @@ for (i in sampled_sims) {
         sex = sex,
         year = year_diagnosis
       ),
-      method = "pohar-perme",
-      add.times = c(1, round((max_time + 1)/2), max_time) * 365.241
+      method = "pohar-perme"
     )
     lines(
       pp_sim$time / 365.241,
@@ -129,31 +153,31 @@ for (i in sampled_sims) {
   }
 }
 
-# Overlay Pooled Pohar-Perme & Theoretical Curves
+# Overlay Mean Pohar-Perme Curve
 lines(
-  pp_pooled$time / 365.241,
-  pp_pooled$surv,
+  t_seq_years,
+  mean_pp_surv,
   col = "red",
   lwd = 3,
-  type = "s"
+  type = "l" 
 )
 
 # 95% Confidence Intervals
 lines(
-  pp_pooled$time / 365.241,
-  pp_pooled$lower,
+  t_seq_years,
+  lower_pp_surv,
   col = "red",
   lwd = 1.5,
   lty = 3, 
-  type = "s"
+  type = "l"
 )
 lines(
-  pp_pooled$time / 365.241,
-  pp_pooled$upper,
+  t_seq_years,
+  upper_pp_surv,
   col = "red",
   lwd = 1.5,
   lty = 3, 
-  type = "s"
+  type = "l"
 )
 
 lines(
@@ -169,7 +193,7 @@ legend(
   "bottomleft",
   legend = c(
     paste0("Individual PP Estimates (First ", N_plot, ")"),
-    paste0("Pooled PP Estimate (N=", nrow(data_pooled_fast), ") & 95% CI"),
+    paste0("Mean PP Estimate (N iterations=", n_sims, ") & 95% CI"),
     "Theoretical Net Survival Curve S(t)"
   ),
   col = c(rgb(0.2, 0.5, 0.8, alpha = 0.5), "red", "black"),
