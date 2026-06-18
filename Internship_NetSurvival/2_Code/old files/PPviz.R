@@ -5,13 +5,12 @@ library(survival)
 library(relsurv)
 
 # Parameters (Must match the target scenario)
-lambda_scenario <- 0.015
+lambda_scenario <- 0.014
 max_time <- max_time
 beta_age <- 0.02
 beta_sex <- 0
 N_plot <- 20
 
-#Load Data from Batch Output folder
 #Load Data from Batch Output folder
 data_path <-
   sprintf("current/outputs/data/simulated_cohort_lambda_%.3f.rds",
@@ -76,6 +75,8 @@ n_sims <- length(unique_sims)
 # Create a matrix to store survival probabilities (rows = time points, cols = simulations)
 pp_surv_matrix <- matrix(NA, nrow = length(t_seq_days), ncol = n_sims)
 
+start <- proc.time()
+
 message("Calculating individual PP curves for the mean estimate...")
 for (i in seq_along(unique_sims)) {
   data_sim <- subset(all_simulated_data, sim_id == unique_sims[i])
@@ -87,7 +88,7 @@ for (i in seq_along(unique_sims)) {
       ratetable = survexp.us,
       rmap = list(age = age_days, sex = sex, year = year_diagnosis),
       method = "pohar-perme"
-      )
+    )
     
     # Extract survival probabilities at the exact common time grid
     pp_summary <- summary(pp_sim, times = t_seq_days, extend = TRUE)
@@ -109,7 +110,7 @@ plot(
   0,
   type = "n",
   xlim = c(0, max_time),
-  ylim = c(0.3, 1.1),
+  ylim = c(0.9, 1.1),
   xlab = "Time since diagnosis (Years)",
   ylab = "Net Survival Probability",
   main = paste0(
@@ -162,23 +163,23 @@ lines(
   type = "l" 
 )
 
-# 95% Confidence Intervals
-lines(
-  t_seq_years,
-  lower_pp_surv,
-  col = "red",
-  lwd = 1.5,
-  lty = 3, 
-  type = "l"
-)
-lines(
-  t_seq_years,
-  upper_pp_surv,
-  col = "red",
-  lwd = 1.5,
-  lty = 3, 
-  type = "l"
-)
+# # 95% Confidence Intervals #not plotting CI for now
+# lines(
+#   t_seq_years,
+#   lower_pp_surv,
+#   col = "red",
+#   lwd = 1.5,
+#   lty = 3, 
+#   type = "l"
+#)
+# lines(
+#   t_seq_years,
+#   upper_pp_surv,
+#   col = "red",
+#   lwd = 1.5,
+#   lty = 3, 
+#   type = "l"
+# )
 
 lines(
   t_seq_years,
@@ -187,6 +188,9 @@ lines(
   lwd = 3,
   lty = 2
 )
+
+elapsed <- proc.time() - start
+elapsed
 
 #Legend ---
 legend(
