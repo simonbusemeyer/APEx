@@ -1,30 +1,34 @@
 library(tidyverse)
 library(scales)
 
+results_df <- read_csv("current/outputs/tables/final_results_complete.csv")
+
 # Convert time_t to a categorical factor
 results_df <- results_df %>%
   mutate(time_t_factor = factor(time_t, labels = paste("Year", sort(unique(time_t)))))
 
-ggplot(results_df, aes(x = pct_cancer, y = ecr_unconditional)) +
-  geom_hline(aes(yintercept = 0.95, linetype = "Nominal Target (95%)"), color = "darkred", alpha = 0.8) +
-  # Map both color and shape to the follow-up year factor, and remove geom_line()
+ggplot(results_df, aes(x = pct_cancer, y = bias_conditional)) +
+  # Reference line at 0 to indicate zero bias
+  geom_hline(aes(yintercept = 0, linetype = "No Bias"), color = "darkred", alpha = 0.8) +
+  # Scatter points stratified by both color and shape
   geom_point(aes(color = time_t_factor, shape = time_t_factor), size = 3) +
   
-  # Scales
+  # Scales & Styling
   scale_color_viridis_d(option = "plasma", end = 0.8) + 
-  scale_shape_discrete() + # Automatically assigns distinct shapes
-  scale_linetype_manual(values = c("Nominal Target (95%)" = "dashed")) +
+  scale_shape_discrete() + 
+  scale_linetype_manual(values = c("No Bias" = "dashed")) +
   scale_x_continuous(labels = percent_format(accuracy = 1)) +
-  scale_y_continuous(breaks = seq(0.9, 1.0, by = 0.01)) +
-  coord_cartesian(ylim = c(0.9, 1.0)) + 
+  # Adjusted y-axis breaks for evaluating precise variations in bias
+  scale_y_continuous(breaks = seq(-0.2, 0.2, by = 0.01)) +
+  coord_cartesian(ylim = c(-0.02, 0.02)) + 
   
   # Labels
   labs(
-    title = "PPE Empirical Coverage Under Competing Risks",
+    title = "PPE Bias Under Competing Risks",
     x = "Proportion of Cohort Experiencing Cancer Death vs Non-Cancer Death",
-    y = "Empirical Coverage Rate",
+    y = "Bias",
     color = "Follow-up",
-    shape = "Follow-up", 
+    shape = "Follow-up",
     linetype = NULL 
   ) +
   
