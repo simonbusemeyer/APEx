@@ -1,12 +1,12 @@
 # rltf_calibration.R
 source("current/functions/generate_dataModified_ng.R")
 
-calibrate_rltf_grid <- function(lambdas, 
+calibrate_censoring_grid <- function(lambdas, 
                                 n_patients, 
                                 max_time, 
                                 age_option = "E", 
                                 beta_age = 0.02, 
-                                target_rltf = 0.30, 
+                                target_censoring = 0.30, 
                                 tol = 0.01, 
                                 n_pilots = 5, 
                                 max_iter = 50) {
@@ -18,7 +18,7 @@ calibrate_rltf_grid <- function(lambdas,
   )
   
   cat(sprintf("Starting Random Loss to Follow-Up (RLTF) Calibration...\nTarget RLTF: %.1f%% (±%.1f%%)\n\n", 
-              target_rltf * 100, tol * 100))
+              target_censoring * 100, tol * 100))
   
   for (lam in lambdas) {
     current_borne_a <- max_time * 1.5 
@@ -52,11 +52,11 @@ calibrate_rltf_grid <- function(lambdas,
       
       # 3. Check boundaries and adjust borne_a
       # If RLTF is too high, -> INCREASE borne_a
-      if (mean_rltf > (target_rltf + tol)) {
+      if (mean_rltf > (target_censoring + tol)) {
         current_borne_a <- current_borne_a * 1.1 
         
         # If RLTF is too low, DECREASE borne_a
-      } else if (mean_rltf < (target_rltf - tol)) {
+      } else if (mean_rltf < (target_censoring - tol)) {
         current_borne_a <- current_borne_a * 0.9 
         
         # Target reached
