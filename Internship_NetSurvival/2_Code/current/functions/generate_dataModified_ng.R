@@ -21,11 +21,11 @@ generate_data <- function(lambda,
     
   } else if (age_option == "C") {
     # Option C: age ~ Uniform[15, 39]
-    age <- runif(n, min = 15, max = 39.999)
+    age <- runif(n, min = 30, max = 40)
     
   } else if (age_option == "D") {
     # Option D: age ~ Uniform[50, 74]
-    age <- runif(n, min = 50, max = 74.999)
+    age <- trunc(runif(n, min = 30, max = 40))
     
   } else if (age_option == "E") {
     # Option E: age ~ Uniform[50, 59]
@@ -72,8 +72,8 @@ generate_data <- function(lambda,
   
   theoretical_mean <- switch(age_option,
                              "A" = 84.5, # (80+89)/2
-                             "C" = 27.0, # (15+39)/2
-                             "D" = 62.0, # (50+74)/2
+                             "C" = 35, # (15+39)/2
+                             "D" = 35, # (50+74)/2
                              "E" = 54.5, # (50+59)/2
                              "F" = 84.5, # (80+89)/2
                              "Luo" = 67.2,
