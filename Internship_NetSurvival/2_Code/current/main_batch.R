@@ -9,7 +9,8 @@ library(data.table)
 source("current/functions/generate_dataModified_ng.R")
 source("current/functions/analyze_one_ng.R")
 source("current/functions/compute_metrics.R")
-source("current/functions/rltf_calibration.R")
+#source("current/functions/rltf_calibration.R")
+source("current/functions/censoring_calibration.R")
 source("current/functions/nessie.R")
 
 # Global Parameters
@@ -22,7 +23,7 @@ year.start_max <- 2010
 prop_female <- 0
 N_files <- 10
 
-lambdas_to_run <- c(0.001, 0.003, 0.005, 0.007, 0.01, 0.02, 0.03, 0.04)#, 0.05, 0.07, 0.10, 0.30)
+lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
 # Calculate max_time
 cat("Calculating dynamic max_time based on population expected survival...\n")
@@ -36,13 +37,13 @@ max_time <- determine_max_time(
 max_time_days <- max_time * 365.241
 cat(sprintf("=> Dynamic max_time set to: %d years\n\n", max_time))
 # Run the calibration engine to dynamically generate the scenarios dataframe
-scenarios <- calibrate_rltf_grid(
+scenarios <- calibrate_censoring_grid(
   lambdas = lambdas_to_run,
   n_patients = n_patients,
   max_time = max_time,
   age_option = age_option,
   beta_age = beta_age,
-  target_rltf = 0.20, # target random loss to follow-up
+  target_censoring = 0.30, # target random loss to follow-up
   n_pilots = 3        # Adjust based on variance
 )
 
@@ -100,11 +101,11 @@ for (i in seq_len(nrow(scenarios))) {
   
   # 3. Aggregate Data Efficiently
   all_scenario_data <- rbindlist(df)
-  saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.2f.rds", lambda_scenario))
+  saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.3f.rds", lambda_scenario))
   
   # 4. Calculate and Save Metrics
   metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)
-  saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.2f.rds", lambda_scenario))
+  saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.3f.rds", lambda_scenario))
 }
 
 # Close parallel backend to free up resources
