@@ -15,17 +15,17 @@ source("current/functions/censoring_calibration.R")
 source("current/functions/nessie.R")
 
 # Global Parameters
-n_patients <- 2000
+n_patients <- 20000
 age_option <- "Luo"
 beta_age <- 0.02
 beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 10
+N_files <- 1
 
 
-lambdas_to_run <- c(0.004, 0.014) 
+lambdas_to_run <- c(0.003, 0.0035, 0.004, 0.0045, 0.0050, 0.0055, 0.006, 0.0065, 0.007, 0.04) 
 
 #lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
@@ -75,7 +75,7 @@ for (i in seq_len(nrow(scenarios))) {
   lambda_scenario <- scenarios$lambda[i]
   borne_a_scenario <- scenarios$borne_a[i]
   
-  cat(sprintf("\n--- Running scenario %d of %d: lambda = %.3f, borne_a = %.0f ---\n", 
+  cat(sprintf("\n--- Running scenario %d of %d: lambda = %.4f, borne_a = %.0f ---\n", 
               i, nrow(scenarios), lambda_scenario, borne_a_scenario))
   
   df <- vector("list", N_files)
@@ -108,11 +108,11 @@ for (i in seq_len(nrow(scenarios))) {
   
   # 3. Aggregate Data Efficiently
   all_scenario_data <- rbindlist(df)
-  saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.3f.rds", lambda_scenario))
+  saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.4f.rds", lambda_scenario))
   
   # 4. Calculate and Save Metrics
   metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)
-  saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.3f.rds", lambda_scenario))
+  saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.4f.rds", lambda_scenario))
 }
 
 # Close parallel backend to free up resources

@@ -13,8 +13,8 @@ beta_sex <- 0
 N_plot <- 20
 
 # Load Data from Batch Output folder
-data_path <- sprintf("current/outputs/data/simulated_cohort_lambda_%.3f.rds", lambda_scenario)
-metrics_path <- sprintf("current/outputs/tables/metrics_lambda_%.3f.rds", lambda_scenario)
+data_path <- sprintf("current/outputs/data/simulated_cohort_lambda_%.4f.rds", lambda_scenario)
+metrics_path <- sprintf("current/outputs/tables/metrics_lambda_%.4f.rds", lambda_scenario)
 
 if (!file.exists(data_path)) {
   stop(sprintf("Batch data file %s not found! Run main_batch.R first.", data_path))

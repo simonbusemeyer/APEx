@@ -62,7 +62,7 @@ calibrate_censoring_grid <- function(lambdas,
         # Target reached
       } else {
         calibrated <- TRUE
-        cat(sprintf("[SUCCESS] Lambda = %.3f | borne_a = %7.2f | Total Censoring = %4.1f%% | (Iters: %d)\n", 
+        cat(sprintf("[SUCCESS] Lambda = %.4f | borne_a = %7.2f | Total Censoring = %4.1f%% | (Iters: %d)\n", 
                     lam, current_borne_a, mean_censoring * 100, iteration))
       }
       
@@ -72,7 +72,7 @@ calibrate_censoring_grid <- function(lambdas,
     # if convergence wasn't reached
     if (!calibrated) {
       current_borne_a <- Inf
-      cat(sprintf("[WARNING] Lambda = %.3f | Failed to converge. Closest Total Censoring = %4.1f%% | Setting borne_a = Inf\n", 
+      cat(sprintf("[WARNING] Lambda = %.4f | Failed to converge. Closest Total Censoring = %4.1f%% | Setting borne_a = Inf\n", 
                   lam, mean_censoring * 100))
     }
     
