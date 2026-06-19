@@ -39,7 +39,7 @@ lambdas_to_run <- c(0.003, 0.0035, 0.004, 0.0045, 0.0050, 0.0055, 0.006, 0.0065,
 #   year.start_max = year.start_max
 # )
 
-max_time <- 10
+max_time <- 5
 
 max_time_days <- max_time * 365.241
 cat(sprintf("=> Dynamic max_time set to: %d years\n\n", max_time))
@@ -51,7 +51,7 @@ scenarios <- calibrate_censoring_grid(
    age_option = age_option,
   beta_age = beta_age,
    target_censoring = 0.30, # target random loss to follow-up
-   n_pilots = 2        # Adjust based on variance
+   n_pilots = 1        # Adjust based on variance
  )
 
 # Display the calculated scenarios to verify before main execution
