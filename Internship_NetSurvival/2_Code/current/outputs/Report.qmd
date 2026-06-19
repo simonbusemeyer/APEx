@@ -1,0 +1,50 @@
+---
+title: "PPE Empirical Coverage Under Competing Risks"
+format:
+  html:
+    toc: true
+    code-fold: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(scales)
+
+source("../plots/ecr_graph_function.R")
+source("../plots/absolute_bias_graph_function.R")
+source("../plots/bias_graph_function.R")
+source("../plots/rmse_graph_function.R")
+
+results_df <- read_csv("tables/final_results_complete.csv")
+```
+
+## Empirical Coverage
+
+```{r fig-ecr-coverage, fig.width=9, fig.height=6, fig.cap="PPE empirical coverage under competing risks."}
+plot_ecr(results_df)
+```
+
+
+## Absolute Bias
+
+```{r fig-absolute-bias, fig.width=9, fig.height=6, fig.cap="PPE bias under competing risks."}
+plot_absolute_bias(results_df)
+```
+
+
+## Bias
+
+```{r fig-bias, fig.width=9, fig.height=6, fig.cap="PPE bias under competing risks."}
+plot_bias(results_df)
+```
+
+
+## Root Mean Square Error
+
+```{r fig-rmse, fig.width=9, fig.height=6, fig.cap="PPE root mean square error under competing risks."}
+plot_rmse(results_df)
+```
