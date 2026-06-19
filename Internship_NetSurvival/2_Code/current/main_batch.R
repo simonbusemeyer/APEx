@@ -22,10 +22,10 @@ beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 1000
+N_files <- 10
 
 
-lambdas_to_run <- c(0.014) 
+lambdas_to_run <- c(0.004, 0.014) 
 
 #lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
