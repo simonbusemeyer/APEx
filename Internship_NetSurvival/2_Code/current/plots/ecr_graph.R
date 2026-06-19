@@ -1,11 +1,13 @@
 library(tidyverse)
 library(scales)
 
+results_df <- read_csv("current/outputs/tables/final_results_complete.csv")
+
 # Convert time_t to a categorical factor
 results_df <- results_df %>%
-  mutate(time_t_factor = factor(time_t, labels = paste("Year", sort(unique(time_t)))))
+  mutate(time_t_factor = factor(time_t, levels = sort(unique(time_t)), labels = paste("Year", sort(unique(time_t)))))
 
-ggplot(results_df, aes(x = pct_cancer, y = ecr_unconditional)) +
+ggplot(results_df, aes(x = pct_cancer, y = ecr)) +
   geom_hline(aes(yintercept = 0.95, linetype = "Nominal Target (95%)"), color = "darkred", alpha = 0.8) +
   # Map both color and shape to the follow-up year factor, and remove geom_line()
   geom_point(aes(color = time_t_factor, shape = time_t_factor), size = 3) +

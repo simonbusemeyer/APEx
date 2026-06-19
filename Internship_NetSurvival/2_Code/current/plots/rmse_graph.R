@@ -7,7 +7,7 @@ results_df <- read_csv("current/outputs/tables/final_results_complete.csv")
 results_df <- results_df %>%
   mutate(time_t_factor = factor(time_t, labels = paste("Year", sort(unique(time_t)))))
 
-ggplot(results_df, aes(x = pct_cancer, y = rmse_conditional)) +
+ggplot(results_df, aes(x = pct_cancer, y = rmse)) +
   # Reference line at 0 (representing an ideal estimator with zero error)
   geom_hline(aes(yintercept = 0, linetype = "Ideal (No Error)"), color = "darkred", alpha = 0.8) +
   # Scatter points stratified by both color and shape
