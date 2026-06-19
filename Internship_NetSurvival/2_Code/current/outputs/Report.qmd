@@ -18,6 +18,7 @@ source("../plots/ecr_graph_function.R")
 source("../plots/absolute_bias_graph_function.R")
 source("../plots/bias_graph_function.R")
 source("../plots/rmse_graph_function.R")
+source("../plots/PPviz_parallel_function.R")
 
 results_df <- read_csv("tables/final_results_complete.csv")
 ```
@@ -47,4 +48,34 @@ plot_bias(results_df)
 
 ```{r fig-rmse, fig.width=9, fig.height=6, fig.cap="PPE root mean square error under competing risks."}
 plot_rmse(results_df)
+```
+
+
+## Pohar-Perme Visualization by Lambda Scenario
+
+```{r fig-ppviz-all-lambdas, fig.width=9, fig.height=6, fig.cap="Pohar-Perme versus theoretical net survival by lambda scenario.", cache=true}
+lambda_files <- list.files(
+  "data",
+  pattern = "^simulated_cohort_lambda_.*\\.rds$",
+  full.names = FALSE
+)
+
+lambda_values <- lambda_files |>
+  stringr::str_remove("^simulated_cohort_lambda_") |>
+  stringr::str_remove("\\.rds$") |>
+  as.numeric() |>
+  sort()
+
+for (lambda_val in lambda_values) {
+  plot_ppviz_parallel(
+    lambda_scenario = lambda_val,
+    data_dir = "data",
+    metrics_dir = "tables",
+    max_time = 5,
+    beta_age = 0.02,
+    beta_sex = 0,
+    n_plot = 20,
+    use_parallel = TRUE
+  )
+}
 ```
