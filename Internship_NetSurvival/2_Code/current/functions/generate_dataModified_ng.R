@@ -65,49 +65,63 @@ generate_data <- function(lambda,
     age[idx2] <- trunc(runif(sum(idx2), min = 65, max = 85))
     age[idx3] <- trunc(runif(sum(idx3), min = 85, max = 95))
     
+  } else if (age_option == "LuoOlder") {
+    # Option LuoOlder: Skewed older
+    u <- runif(n)
+    age <- numeric(n)
+    
+    # CHANGE THIS VALUE to skew older. 
+    # Example: 0.85 means 85% are 65-85, and 15% are 85-95.
+    p2_prime <- 0.00 
+    
+    idx1 <- u <= p2_prime
+    idx2 <- u > p2_prime
+    
+    age[idx1] <- runif(sum(idx1), min = 65, max = 85)
+    age[idx2] <- runif(sum(idx2), min = 85, max = 95)
+    
   } else {
-    # Catch any invalid inputs
-    stop("age_option must be 'A', 'C', 'D', 'E', 'F', 'Luo'or 'LuoTrunc'")
+    stop("age_option must be 'A', 'C', 'D', 'E', 'F', 'Luo', 'LuoTrunc', or 'LuoOlder'")
   }
   
   # Dynamic Calculation of Theoretical Means
-  # Define standard bounds for the uniform distributions: c(min, max)
   bounds <- switch(age_option,
                    "A"        = c(80, 90),
                    "C"        = c(15, 40),
                    "D"        = c(50, 75),
                    "E"        = c(50, 60),
                    "F"        = c(80, 90),
-                   "Luo"      = NULL, # Handled separately below
-                   "LuoTrunc" = NULL)
+                   "Luo"      = NULL, 
+                   "LuoTrunc" = NULL,
+                   "LuoOlder" = NULL)
   
   if (!is.null(bounds)) {
     if (age_option %in% c("D", "F")) {
-      # For discrete uniform distributions via trunc(runif(min, max)):
-      # The values are integers from min to (max - 1).
-      # The mean of integers from a to b is (a + b) / 2.
       theoretical_mean <- (bounds[1] + (bounds[2] - 1)) / 2
     } else {
-      # For continuous uniform distributions: (min + max) / 2
       theoretical_mean <- mean(bounds)
     }
   } else {
-    # For Luo and LuoTrunc empirical mixture distributions:
     # Expected value E[X] = sum( P(Interval) * E[X | Interval] )
-    weights <- c(0.462, 0.519, 0.020) # the paper has a rounding error of +0.001
     
     if (age_option == "Luo") {
-      # Continuous sub-intervals
+      weights <- c(0.462, 0.519, 0.020)
       means <- c(mean(c(50, 65)), mean(c(65, 85)), mean(c(85, 95)))
+      theoretical_mean <- sum(weights * means)
+      
     } else if (age_option == "LuoTrunc") {
-      # Truncated (discrete) sub-intervals: trunc(runif(min, max))
-      # Means are calculated using the true integer ranges: [50,64], [65,84], [85,94]
+      weights <- c(0.462, 0.519, 0.020)
       means <- c((50 + 64)/2, (65 + 84)/2, (85 + 94)/2)
+      theoretical_mean <- sum(weights * means)
+      
+    } else if (age_option == "LuoOlder") {
+      # MATCH the p2_prime distribution set above
+      # e.g., 0.85 and 0.15
+      weights <- c(0.00, 1) 
+      means <- c(mean(c(65, 85)), mean(c(85, 95)))
+      theoretical_mean <- sum(weights * means)
     }
-    
-    theoretical_mean <- sum(weights * means)
-  }
-  
+  } 
   ageCentre <- age - theoretical_mean
   
   uSex <- runif(n)
