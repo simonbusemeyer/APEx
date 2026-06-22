@@ -53,7 +53,7 @@ plot_rmse(results_df)
 
 ## Pohar-Perme Visualization by Lambda Scenario
 
-```{r fig-ppviz-all-lambdas, fig.width=9, fig.height=6, fig.cap="Pohar-Perme versus theoretical net survival by lambda scenario.", cache=true}
+```{r fig-ppviz-all-lambdas, fig.width=9, fig.height=6, fig.cap="Pohar-Perme versus theoretical net survival by lambda scenario.", cache=TRUE}
 lambda_files <- list.files(
   "data",
   pattern = "^simulated_cohort_lambda_.*\\.rds$",
