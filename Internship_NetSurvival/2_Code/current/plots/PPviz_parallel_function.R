@@ -91,7 +91,7 @@ plot_ppviz_parallel <- function(
   sim_list <- split(all_simulated_data, all_simulated_data$sim_id)
   
   old_plan <- future::plan()
-  on.exit(future::plan(sequential), add = TRUE)
+  on.exit(future::plan(future::sequential), add = TRUE)
   
   if (use_parallel) {
     if (.Platform$OS.type == "unix") {
@@ -129,7 +129,7 @@ plot_ppviz_parallel <- function(
     future.seed = TRUE
   )
   
-  future::plan(sequential)
+  future::plan(future::sequential)
   
   pp_surv_matrix <- do.call(cbind, pp_surv_list)
   
@@ -148,7 +148,7 @@ plot_ppviz_parallel <- function(
     0,
     type = "n",
     xlim = c(0, max_time),
-    ylim = c(0.9, 1.1),
+    ylim = c(0.9, 1.0),
     xlab = "Time since diagnosis (Years)",
     ylab = "Net Survival Probability",
     main = paste0(

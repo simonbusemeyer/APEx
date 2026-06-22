@@ -53,7 +53,7 @@ plot_absolute_bias <- function(
       breaks = seq(-0.2, 0.2, by = 0.01)
     ) +
     ggplot2::coord_cartesian(
-      ylim = c(0, 0.025)
+      ylim = c(0, 0.07)
     ) +
     ggplot2::labs(
       title = title,

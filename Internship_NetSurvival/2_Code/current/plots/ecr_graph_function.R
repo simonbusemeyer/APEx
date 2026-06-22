@@ -60,9 +60,9 @@ plot_ecr <- function(
       labels = scales::percent_format(accuracy = 1)
     ) +
     ggplot2::scale_y_continuous(
-      breaks = seq(0.9, 1.0, by = 0.01)
+      breaks = seq(0.0, 1.0, by = 0.1)
     ) +
-    ggplot2::coord_cartesian(ylim = c(0.9, 1.0)) +
+    ggplot2::coord_cartesian(ylim = c(0.0, 1.0)) +
     ggplot2::labs(
       title = title,
       x = x_lab,
