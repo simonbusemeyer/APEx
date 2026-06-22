@@ -7,7 +7,7 @@ calibrate_censoring_grid <- function(lambdas,
                                      age_option = "Luo", 
                                      beta_age = 0.02, 
                                      target_censoring = 0.30, 
-                                     tol = 0.02, 
+                                     tol = 0.01, 
                                      n_pilots = 3, 
                                      max_iter = 25) {
   
