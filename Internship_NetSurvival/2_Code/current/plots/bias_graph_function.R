@@ -50,11 +50,11 @@ plot_bias <- function(
       labels = scales::percent_format(accuracy = 1)
     ) +
     ggplot2::scale_y_continuous(
-      breaks = seq(-0.2, 0.2, by = 0.01)
+      breaks = seq(-0.2, 0.2, by = 0.001)
     ) +
-    ggplot2::coord_cartesian(
-      ylim = c(-0.0005, 0.07)
-    ) +
+    # ggplot2::coord_cartesian( #comment for auto scaling
+    #   ylim = c(-0.003, 0.01)
+    # ) +
     ggplot2::labs(
       title = title,
       x = x_lab,
