@@ -24,6 +24,11 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, ceiling((max_ti
   net_surv_lower <- pp_summary$lower
   net_surv_upper <- pp_summary$upper
   
+  #if conf.type="log" (default), std.err is on the log scale.
+  # Multiplying by net_surv_pp converts it to the standard error of S(t).
+  raw_se <- pp_summary$std.err
+  net_surv_se <- raw_se * net_surv_pp
+  
   net_surv_theo <- function(t){
     mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))
   }
@@ -39,15 +44,16 @@ analyze_one <- function(df, lambda, beta_age, times_years = c(1, ceiling((max_ti
   res <- data.frame(
     time       = times_years,
     net_surv_pp       = net_surv_pp,
+    se                = net_surv_se,
     net_surv_lower    = net_surv_lower,
     net_surv_upper    = net_surv_upper,
     net_surv_theo     = net_surv_theo_3points,
-    diff       = diff,
-    covered    = covered,
-    n_deaths_cancer = n_deaths_cancer,
-    n_deaths_other = n_deaths_other,
-    pct_cancer = pct_cancer,
-    cens_rate  = cens_rate
+    diff              = diff,
+    covered           = covered,
+    n_deaths_cancer   = n_deaths_cancer,
+    n_deaths_other    = n_deaths_other,
+    pct_cancer        = pct_cancer,
+    cens_rate         = cens_rate
   )
   
   return(res)

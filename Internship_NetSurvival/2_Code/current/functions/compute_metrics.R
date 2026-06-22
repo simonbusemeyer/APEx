@@ -37,6 +37,8 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val){
     absolute_bias = numeric(n_times),
     bias = numeric(n_times),
     rmse = numeric(n_times),
+    dispersion = numeric(n_times),   
+    mean_sd = numeric(n_times),     
     ecr = numeric(n_times)
   )
   
@@ -47,6 +49,8 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val){
     metrics$absolute_bias[i] <- abs(mean(res_t$diff, na.rm = TRUE))
     metrics$bias[i] <- mean(res_t$diff, na.rm = TRUE)
     metrics$rmse[i] <- sqrt(mean(res_t$diff^2, na.rm = TRUE))
+    metrics$dispersion[i] <- sd(res_t$diff, na.rm = TRUE)
+    metrics$mean_sd[i] <- mean(res_t$se, na.rm = TRUE)
     metrics$ecr[i] <- mean(res_t$covered, na.rm = TRUE)
     
  #not computing conditional/unconditional metrics for now
