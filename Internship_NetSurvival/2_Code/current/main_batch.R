@@ -128,7 +128,7 @@ cat("\nTotal execution time:\n")
 print(elapsed)
 
 # Aggregate Results
-rds_files <- list.files("current/outputs/tables", pattern = "metrics_lambda_.*\\.rds$", full.names = TRUE)
+rds_files <- list.files(dir_tables, pattern = "metrics_lambda_.*\\.rds$", full.names = TRUE)
 all_metrics_list <- lapply(rds_files, readRDS)
 
 # better than do.call(rbind, ...)
