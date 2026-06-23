@@ -107,8 +107,15 @@ for (i in seq_len(nrow(scenarios))) {
   }, future.seed = TRUE)
   
   # 3. Aggregate Data Efficiently
-  all_scenario_data <- rbindlist(df)
-  saveRDS(all_scenario_data, file = sprintf("current/outputs/data/simulated_cohort_lambda_%.4f.rds", lambda_scenario))
+  all_scenario_data <- rbindlist(df) # <-- THIS IS THE CRITICAL LINE THAT WAS MISSING
+  
+  # Now it is safe to add the lambda column and save as parquet
+  all_scenario_data[, lambda := lambda_scenario]
+  
+  arrow::write_parquet(
+    all_scenario_data, 
+    sink = sprintf("current/outputs/data/simulated_cohort_lambda_%.4f.parquet", lambda_scenario)
+  )
   
   # 4. Calculate and Save Metrics
   metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)

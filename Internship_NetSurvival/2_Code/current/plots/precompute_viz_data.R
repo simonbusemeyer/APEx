@@ -11,13 +11,8 @@ save_dir    <- "../outputs/plots_data"
 dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
 
 # 3. Locate and verify the simulation files
-lambda_files <- list.files(data_dir, pattern = "^simulated_cohort_lambda_.*\\.rds$", full.names = FALSE)
-if (length(lambda_files) == 0) {
-  stop("CRITICAL: Found the data folder, but 0 lambda .rds files live inside: ", data_dir)
-}
-
-lambda_values <- sort(as.numeric(stringr::str_remove(stringr::str_remove(lambda_files, "^simulated_cohort_lambda_"), "\\.rds$")))
-message("Successfully located ", length(lambda_values), " simulation scenarios in: ", data_dir)
+lambda_files <- list.files(data_dir, pattern = "^simulated_cohort_lambda_.*\\.parquet$", full.names = FALSE)
+lambda_values <- sort(as.numeric(stringr::str_remove(stringr::str_remove(lambda_files, "^simulated_cohort_lambda_"), "\\.parquet$")))
 
 # 4. Run parallel pre-computation
 for (lambda_val in lambda_values) {

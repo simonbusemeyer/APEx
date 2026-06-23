@@ -26,7 +26,7 @@ plot_ppviz_parallel <- function(
   
   data_path <- file.path(
     data_dir,
-    sprintf("simulated_cohort_lambda_%.4f.rds", lambda_scenario)
+    sprintf("simulated_cohort_lambda_%.4f.parquet", lambda_scenario)
   )
   
   metrics_path <- file.path(
