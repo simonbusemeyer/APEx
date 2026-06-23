@@ -7,7 +7,7 @@ library(relsurv)
 library(future.apply)
 
 # Parameters (Must match the target scenario)
-lambda_scenario <- 0.014
+lambda_scenario <- 0.019
 max_time <- max_time 
 beta_age <- 0.02
 beta_sex <- 0
@@ -106,7 +106,7 @@ message("Mean calculation complete.")
 # Plotting
 # ---------------------------------------------------------
 plot(
-  0, type = "n", xlim = c(0, max_time), ylim = c(0.9, 1.1),
+  0, type = "n", xlim = c(0, max_time), ylim = c(0.9, 1.0),
   xlab = "Time since diagnosis (Years)", ylab = "Net Survival Probability",
   main = paste0("Net Survival: PP vs Theoretical \n Proportion of deaths due to cancer: ", pct_cancer_viz, "%")
 )

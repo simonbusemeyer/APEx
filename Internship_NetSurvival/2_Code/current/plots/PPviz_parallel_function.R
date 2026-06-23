@@ -2,7 +2,7 @@ plot_ppviz_parallel <- function(
     lambda_scenario,
     data_dir = "data",
     metrics_dir = "tables",
-    max_time = 5,
+    max_time = NULL,
     beta_age = 0.02,
     beta_sex = 0,
     n_plot = 20,
@@ -44,6 +44,10 @@ plot_ppviz_parallel <- function(
   
   all_simulated_data <- readRDS(data_path)
   metrics_data <- readRDS(metrics_path)
+  
+  if (is.null(max_time)) {
+    max_time <- max(all_simulated_data$observed_time, na.rm = TRUE)
+  }
   
   required_cols <- c(
     "age",

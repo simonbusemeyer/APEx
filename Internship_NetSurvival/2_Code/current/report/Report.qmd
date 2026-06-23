@@ -23,7 +23,19 @@ source("../plots/dispersion_graph_function.R")
 source("../plots/mean_sd_graph_function.R")
 source("../plots/variance_calibration_graph_function.R")
 
-results_df <- read_csv("tables/final_results_complete.csv")
+results_df <- read_csv("../outputs/tables/final_results_complete.csv")
+
+save_dir <- "../outputs/plots_data"
+
+# Check if the generated data already exists
+generated_files <- list.files(save_dir, pattern = "^ppviz_data_lambda_.*\\.rds$")
+
+if (length(generated_files) == 0) {
+  message("Pre-computed plots not found. Running parallel pre-computation...")
+  source("precompute_viz_data") 
+} else {
+  message("Pre-computed data already exists. Skipping pre-computation step.")
+}
 ```
 
 ## Empirical Coverage
@@ -53,7 +65,7 @@ plot_bias(results_df)
 plot_rmse(results_df)
 ```
 
-## Variance Tracking & Calibration
+## Variance
 
 ```{r fig-dispersion, fig.width=9, fig.height=6, fig.cap="PPE empirical dispersion under competing risks."}
 plot_dispersion(results_df)
@@ -72,7 +84,13 @@ plot_variance_calibration(results_df)
 ```{r fig-ppviz-all-lambdas, fig.width=9, fig.height=6, fig.cap="Pohar-Perme versus theoretical net survival by lambda scenario.", echo=FALSE}
 #| layout-ncol: 1
 
-plot_files <- sort(list.files("plots_data", pattern = "^ppviz_data_lambda_.*\\.rds$", full.names = TRUE))
+target_dir <- "../outputs/plots_data"
+
+plot_files <- sort(list.files(target_dir, pattern = "^ppviz_data_lambda_.*\\.rds$", full.names = TRUE))
+
+if (length(plot_files) == 0) {
+  stop("Error: No pre-computed .rds plot files found in ", target_dir)
+}
 
 for (p_file in plot_files) {
   p <- readRDS(p_file)
