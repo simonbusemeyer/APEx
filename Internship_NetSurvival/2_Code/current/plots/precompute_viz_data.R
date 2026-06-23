@@ -1,12 +1,12 @@
 # 1. Source the plotting function using relative paths
-source_path <- "current/plots/PPviz_parallel_function.R"
+source_path <- "../plots/PPviz_parallel_function.R"
 if (!file.exists(source_path)) stop("CRITICAL: Function script not found at ", source_path)
 source(source_path)
 
 # 2. Define relative input/output paths
-data_dir    <- "current/outputs/data"
-metrics_dir <- "current/outputs/tables"
-save_dir    <- "current/outputs/plots_data"
+data_dir    <- "../outputs/data"
+metrics_dir <- "../outputs/tables"
+save_dir    <- "../outputs/plots_data"
 
 dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
 
