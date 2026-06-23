@@ -6,6 +6,7 @@ library(survival)
 library(relsurv)
 library(future.apply)
 library(arrow)
+library(here)
 
 # Parameters (Must match the target scenario)
 lambda_scenario <- 0.018
@@ -15,8 +16,8 @@ beta_sex <- 0
 N_plot <- 20
 
 # Load Data from Batch Output folder
-data_path <- sprintf("current/outputs/data/simulated_cohort_lambda_%.4f.parquet", lambda_scenario)
-metrics_path <- sprintf("current/outputs/tables/metrics_lambda_%.4f.rds", lambda_scenario)
+data_path <- here("current", "outputs", "data", sprintf("simulated_cohort_lambda_%.4f.parquet", lambda_scenario))
+metrics_path <- here("current", "outputs", "tables", sprintf("metrics_lambda_%.4f.rds", lambda_scenario))
 
 if (!file.exists(data_path)) {
   stop(sprintf("Batch data file %s not found! Run main_batch.R first.", data_path))

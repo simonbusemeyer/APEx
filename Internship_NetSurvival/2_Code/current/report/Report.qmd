@@ -1,5 +1,5 @@
 ---
-title: "PPE Empirical Coverage Under Competing Risks"
+title: "PPE Performace Report"
 format:
   html:
     toc: true
@@ -13,26 +13,28 @@ execute:
 ```{r setup}
 library(tidyverse)
 library(scales)
+library(here)
 
-source("../plots/ecr_graph_function.R")
-source("../plots/absolute_bias_graph_function.R")
-source("../plots/bias_graph_function.R")
-source("../plots/rmse_graph_function.R")
-source("../plots/PPviz_parallel_function.R")
-source("../plots/dispersion_graph_function.R")
-source("../plots/mean_sd_graph_function.R")
-source("../plots/variance_calibration_graph_function.R")
+# Source plotting functions using project-root absolute paths
+source(here("current", "plots", "ecr_graph_function.R"))
+source(here("current", "plots", "absolute_bias_graph_function.R"))
+source(here("current", "plots", "bias_graph_function.R"))
+source(here("current", "plots", "rmse_graph_function.R"))
+source(here("current", "plots", "PPviz_parallel_function.R"))
+source(here("current", "plots", "dispersion_graph_function.R"))
+source(here("current", "plots", "mean_sd_graph_function.R"))
+source(here("current", "plots", "variance_calibration_graph_function.R"))
 
-results_df <- read_csv("../outputs/tables/final_results_complete.csv")
+results_df <- read_csv(here("current", "outputs", "tables", "final_results_complete.csv"))
 
-save_dir <- "../outputs/plots_data"
+save_dir <- here("current", "outputs", "plots_data")
 
 # Check if the generated data already exists
 generated_files <- list.files(save_dir, pattern = "^ppviz_data_lambda_.*\\.rds$")
 
 if (length(generated_files) == 0) {
   message("Pre-computed plots not found. Running parallel pre-computation...")
-  source("precompute_viz_data") 
+  source(here("current", "plots", "precompute_viz_data.R")) 
 } else {
   message("Pre-computed data already exists. Skipping pre-computation step.")
 }
@@ -84,7 +86,7 @@ plot_variance_calibration(results_df)
 ```{r fig-ppviz-all-lambdas, fig.width=9, fig.height=6, fig.cap="Pohar-Perme versus theoretical net survival by lambda scenario.", echo=FALSE}
 #| layout-ncol: 1
 
-target_dir <- "../outputs/plots_data"
+target_dir <- here("current", "outputs", "plots_data")
 
 plot_files <- sort(list.files(target_dir, pattern = "^ppviz_data_lambda_.*\\.rds$", full.names = TRUE))
 

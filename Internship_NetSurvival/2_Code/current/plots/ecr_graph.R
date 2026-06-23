@@ -1,7 +1,8 @@
 library(tidyverse)
 library(scales)
+library(here)
 
-results_df <- read_csv("current/outputs/tables/final_results_complete.csv")
+results_df <- read_csv(here("current", "outputs", "tables", "final_results_complete.csv"))
 
 # Convert time_t to a categorical factor
 results_df <- results_df %>%

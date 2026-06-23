@@ -1,5 +1,6 @@
 # rltf_calibration.R
-source("current/functions/generate_dataModified_ng.R")
+library(here)
+source(here("current", "functions", "generate_dataModified_ng.R"))
 
 calibrate_censoring_grid <- function(lambdas, 
                                 n_patients, 

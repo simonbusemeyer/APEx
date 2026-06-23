@@ -5,14 +5,15 @@ library(survival)
 library(relsurv)
 library(future.apply)
 library(data.table)
+library(here)
 
-#source("fixes for later/generate_dataModified_ng_corrections.R")
-source("current/functions/generate_dataModified_ng.R")
-source("current/functions/analyze_one_ng.R")
-source("current/functions/compute_metrics.R")
-#source("current/functions/rltf_calibration.R")
-source("current/functions/censoring_calibration.R")
-source("current/functions/nessie.R")
+#source(here("fixes for later", "generate_dataModified_ng_corrections.R"))
+source(here("current", "functions", "generate_dataModified_ng.R"))
+source(here("current", "functions", "analyze_one_ng.R"))
+source(here("current", "functions", "compute_metrics.R"))
+#source(here("current", "functions", "rltf_calibration.R"))
+source(here("current", "functions", "censoring_calibration.R"))
+source(here("current", "functions", "nessie.R"))
 
 # Global Parameters
 n_patients <- 5
@@ -59,8 +60,8 @@ print("=== Final Calibrated Scenarios ===")
 print(scenarios)
 
 # Reconcile output directories
-if(!dir.exists("current/outputs/tables")) dir.create("current/outputs/tables", recursive = TRUE)
-if(!dir.exists("current/outputs/data")) dir.create("current/outputs/data", recursive = TRUE)
+dir_tables <- here("current", "outputs", "tables")
+dir_data <- here("current", "outputs", "data")
 
 start <- proc.time()
 
@@ -107,20 +108,17 @@ for (i in seq_len(nrow(scenarios))) {
   }, future.seed = TRUE)
   
   # 3. Aggregate Data Efficiently
-  all_scenario_data <- rbindlist(df) # <-- THIS IS THE CRITICAL LINE THAT WAS MISSING
+  all_scenario_data <- rbindlist(df)
   
-  # Now it is safe to add the lambda column and save as parquet
   all_scenario_data[, lambda := lambda_scenario]
   
   arrow::write_parquet(
     all_scenario_data, 
-    sink = sprintf("current/outputs/data/simulated_cohort_lambda_%.4f.parquet", lambda_scenario)
-  )
+    sink = here("current", "outputs", "data", sprintf("simulated_cohort_lambda_%.4f.parquet", lambda_scenario))  )
   
   # 4. Calculate and Save Metrics
   metrics <- compute_metrics(results_list = results_scenarios, lambda_val = lambda_scenario, borne_a_val = borne_a_scenario)
-  saveRDS(metrics, file = sprintf("current/outputs/tables/metrics_lambda_%.4f.rds", lambda_scenario))
-}
+  saveRDS(metrics, file = here("current", "outputs", "tables", sprintf("metrics_lambda_%.4f.rds", lambda_scenario)))}
 
 # Close parallel backend to free up resources
 plan(sequential)
@@ -137,7 +135,6 @@ all_metrics_list <- lapply(rds_files, readRDS)
 final_results <- rbindlist(all_metrics_list, use.names = TRUE, fill = TRUE)
 setDF(final_results)
 
-saveRDS(final_results, "current/outputs/tables/final_results_complete.rds")
+saveRDS(final_results, here("current", "outputs", "tables", "final_results_complete.rds"))
 write.csv(final_results, 
-          file = "current/outputs/tables/final_results_complete.csv", 
-          row.names = FALSE)
+          file = here("current", "outputs", "tables", "final_results_complete.csv"),          row.names = FALSE)
