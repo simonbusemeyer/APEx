@@ -1,7 +1,9 @@
+library(here)
+
 plot_ppviz_parallel <- function(
     lambda_scenario,
-    data_dir = "data",
-    metrics_dir = "tables",
+    data_dir = here("current", "outputs", "data"),
+    metrics_dir = here("current", "outputs", "tables"),
     max_time = NULL,
     beta_age = 0.02,
     beta_sex = 0,

@@ -107,9 +107,8 @@ for (i in seq_len(nrow(scenarios))) {
   }, future.seed = TRUE)
   
   # 3. Aggregate Data Efficiently
-  all_scenario_data <- rbindlist(df) # <-- THIS IS THE CRITICAL LINE THAT WAS MISSING
+  all_scenario_data <- rbindlist(df)
   
-  # Now it is safe to add the lambda column and save as parquet
   all_scenario_data[, lambda := lambda_scenario]
   
   arrow::write_parquet(
