@@ -15,19 +15,19 @@ source("current/functions/censoring_calibration.R")
 source("current/functions/nessie.R")
 
 # Global Parameters
-n_patients <- 20000
-age_option <- "Luo"
+n_patients <- 5000
+age_option <- "LuoTrunc"
 beta_age <- 0.02
 beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 1
+N_files <- 1000
 
 
-lambdas_to_run <- c(0.018) 
+#lambdas_to_run <- c(0.018) 
 
-#lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
+lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
 # Calculate max_time
 # cat("Calculating dynamic max_time based on population expected survival...\n")
@@ -39,7 +39,7 @@ lambdas_to_run <- c(0.018)
 #   year.start_max = year.start_max
 # )
 
-max_time <- 5
+max_time <- 7
 
 max_time_days <- max_time * 365.241
 cat(sprintf("=> Dynamic max_time set to: %d years\n\n", max_time))
@@ -51,7 +51,7 @@ scenarios <- calibrate_censoring_grid(
    age_option = age_option,
   beta_age = beta_age,
    target_censoring = 0.30, # target random loss to follow-up
-   n_pilots = 1        # Adjust based on variance
+   n_pilots = 3        # Adjust based on variance
  )
 
 # Display the calculated scenarios to verify before main execution
@@ -65,6 +65,7 @@ if(!dir.exists("current/outputs/data")) dir.create("current/outputs/data", recur
 start <- proc.time()
 
 # Setup parallel backend once for the entire batch
+options(future.globals.maxSize = 1000 * 1024^2) # Sets limit to ~1 GB
 plan(multisession, workers = availableCores() - 1)
 cat("Total Cores Available:", availableCores(), "\n")
 cat("Active Parallel Workers:", nbrOfWorkers(), "\n")
@@ -101,8 +102,8 @@ for (i in seq_len(nrow(scenarios))) {
   }
   
   # 2. Analyze Data in Parallel
-  results_scenarios <- future_lapply(1:N_files, function(j) {
-    analyze_one(df[[j]], lambda = lambda_scenario, beta_age = beta_age, 
+  results_scenarios <- future_lapply(df, function(single_df) {
+    analyze_one(single_df, lambda = lambda_scenario, beta_age = beta_age, 
                 times_years = c(1, ceiling((max_time + 1)/2), max_time))
   }, future.seed = TRUE)
   
