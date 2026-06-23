@@ -33,7 +33,7 @@ for (lambda_val in lambda_values) {
   save_path <- file.path(save_dir, sprintf("ppviz_data_lambda_%.4f.rds", lambda_val))
   saveRDS(plot_data, save_path)
   
-  # Dump dead RAM between parallel loops
+  # Dump RAM between parallel loops
   rm(plot_data)
   gc()
 }

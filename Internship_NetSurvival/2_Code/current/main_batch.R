@@ -15,19 +15,19 @@ source("current/functions/censoring_calibration.R")
 source("current/functions/nessie.R")
 
 # Global Parameters
-n_patients <- 5000
-age_option <- "LuoTrunc"
+n_patients <- 5
+age_option <- "Luo"
 beta_age <- 0.02
 beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 1000
+N_files <- 10
 
 
-#lambdas_to_run <- c(0.018) 
+lambdas_to_run <- c(0.018) 
 
-lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
+#lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
 # Calculate max_time
 # cat("Calculating dynamic max_time based on population expected survival...\n")
@@ -51,7 +51,7 @@ scenarios <- calibrate_censoring_grid(
    age_option = age_option,
   beta_age = beta_age,
    target_censoring = 0.30, # target random loss to follow-up
-   n_pilots = 3        # Adjust based on variance
+   n_pilots = 2        # Adjust based on variance
  )
 
 # Display the calculated scenarios to verify before main execution
@@ -103,8 +103,7 @@ for (i in seq_len(nrow(scenarios))) {
   
   # 2. Analyze Data in Parallel
   results_scenarios <- future_lapply(df, function(single_df) {
-    analyze_one(single_df, lambda = lambda_scenario, beta_age = beta_age, 
-                times_years = c(1, ceiling((max_time + 1)/2), max_time))
+    analyze_one(single_df, lambda = lambda_scenario, beta_age = beta_age, max_time = max_time)
   }, future.seed = TRUE)
   
   # 3. Aggregate Data Efficiently
@@ -127,7 +126,9 @@ print(elapsed)
 rds_files <- list.files("current/outputs/tables", pattern = "metrics_lambda_.*\\.rds$", full.names = TRUE)
 all_metrics_list <- lapply(rds_files, readRDS)
 
-final_results <- do.call(rbind, all_metrics_list)
+# better than do.call(rbind, ...)
+final_results <- rbindlist(all_metrics_list, use.names = TRUE, fill = TRUE)
+setDF(final_results)
 
 saveRDS(final_results, "current/outputs/tables/final_results_complete.rds")
 write.csv(final_results, 
