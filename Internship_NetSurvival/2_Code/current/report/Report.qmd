@@ -73,7 +73,7 @@ plot_rmse(results_df)
 ```{r fig-dispersion, fig.width=9, fig.height=6, fig.cap="PPE empirical dispersion under competing risks."}
 plot_estimate_sd(results_df)
 ```
-```{r fig-dispersion, fig.width=9, fig.height=6, fig.cap="PPE empirical dispersion under competing risks."}
+```{r fig-estimation-error, fig.width=9, fig.height=6, fig.cap="PPE empirical dispersion under competing risks."}
 plot_estimation_error_sd(results_df)
 ```
 

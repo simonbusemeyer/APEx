@@ -16,7 +16,7 @@ source(here("current", "functions", "censoring_calibration.R"))
 source(here("current", "functions", "nessie.R"))
 
 # Global Parameters
-n_patients <- 5000
+n_patients <- 2000
 age_option <- "Luo"
 beta_age <- 0.02
 beta_sex <- 0
