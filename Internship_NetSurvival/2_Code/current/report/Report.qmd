@@ -102,7 +102,7 @@ for (p_file in plot_files) {
   p <- readRDS(p_file)
   
   plot(
-    0, type = "n", xlim = c(0, max(p$t_seq_years)), ylim = c(0.9, 1.0),
+    0, type = "n", xlim = c(0, max(p$t_seq_years)), ylim = c(0.8, 1.0),
     xlab = "Time since diagnosis (Years)", ylab = "Net Survival Probability",
     main = paste0("Net Survival: PP vs Theoretical\nLambda = ", sprintf("%.4f", p$lambda), 
                   "; Proportion of deaths due to cancer: ", p$pct_cancer, "%")
