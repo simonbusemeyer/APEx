@@ -23,10 +23,7 @@ analyze_one <- function(df, lambda, beta_age, max_time) {times_years <- c(1, cei
   net_surv_lower <- pp_summary$lower
   net_surv_upper <- pp_summary$upper
   
-  #if conf.type="log" (default), std.err is on the log scale.
-  # Multiplying by net_surv_pp converts it to the standard error of S(t).
-  raw_se <- pp_summary$std.err
-  net_surv_se <- raw_se * net_surv_pp
+  net_surv_se <- pp_summary$std.err
   
   net_surv_theo <- function(t){
     mean(exp(-lambda * t * exp(beta_age * df$ageCentre)))

@@ -11,8 +11,9 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val) {
     absolute_bias = abs(mean(diff, na.rm = TRUE)),
     bias          = mean(diff, na.rm = TRUE),
     rmse          = sqrt(mean(diff^2, na.rm = TRUE)),
-    dispersion    = sd(diff, na.rm = TRUE),
-    mean_sd       = mean(se, na.rm = TRUE),
+    estimate_sd       = sd(net_surv_pp, na.rm = TRUE),
+    estimation_error_sd = sd(diff, na.rm = TRUE),
+    mean_se       = mean(se, na.rm = TRUE),
     ecr           = mean(covered, na.rm = TRUE)
   ), by = .(time_t = time)]
   
