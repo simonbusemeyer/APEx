@@ -21,7 +21,7 @@ source(here("current", "plots", "absolute_bias_graph_function.R"))
 source(here("current", "plots", "bias_graph_function.R"))
 source(here("current", "plots", "rmse_graph_function.R"))
 source(here("current", "plots", "PPviz_parallel_function.R"))
-source(here("current", "plots", "dispersion_graph_function.R"))
+source(here("current", "plots", "estimate_sd_graph_function.R"))
 source(here("current", "plots", "mean_sd_graph_function.R"))
 source(here("current", "plots", "variance_calibration_graph_function.R"))
 
@@ -70,7 +70,7 @@ plot_rmse(results_df)
 ## Variance
 
 ```{r fig-dispersion, fig.width=9, fig.height=6, fig.cap="PPE empirical dispersion under competing risks."}
-plot_dispersion(results_df)
+plot_estimate_sd(results_df)
 ```
 
 ```{r fig-mean-sd, fig.width=9, fig.height=6, fig.cap="PPE mean estimated standard error under competing risks."}
