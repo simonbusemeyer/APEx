@@ -16,19 +16,19 @@ source(here("current", "functions", "censoring_calibration.R"))
 source(here("current", "functions", "nessie.R"))
 
 # Global Parameters
-n_patients <- 5
+n_patients <- 5000
 age_option <- "Luo"
 beta_age <- 0.02
 beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 10
+N_files <- 1000
 
 
-lambdas_to_run <- c(0.018) 
+#lambdas_to_run <- c(0.018) 
 
-#lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
+lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
 # Calculate max_time
 # cat("Calculating dynamic max_time based on population expected survival...\n")
