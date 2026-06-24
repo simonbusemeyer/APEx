@@ -44,7 +44,7 @@ plot_ppviz_parallel <- function(
     stop(sprintf("Metrics file not found: %s", metrics_path))
   }
   
-  all_simulated_data <- readRDS(data_path)
+  all_simulated_data <- arrow::read_parquet(data_path)
   metrics_data <- readRDS(metrics_path)
   
   if (is.null(max_time)) {
