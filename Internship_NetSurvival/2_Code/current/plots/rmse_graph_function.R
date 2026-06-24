@@ -53,7 +53,7 @@ plot_rmse <- function(
       breaks = seq(0, 0.3, by = 0.05)
     ) +
     ggplot2::coord_cartesian(
-      ylim = c(0, 0.10)
+      ylim = c(0, 0.03)
     ) +
     ggplot2::labs(
       title = title,
