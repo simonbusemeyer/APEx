@@ -8,3 +8,6 @@
 *.rds
 *.gsheet
 Internship_NetSurvival/2_Code/current/outputs/
+.Rproj.user/
+*.Rproj
+*.parquet
