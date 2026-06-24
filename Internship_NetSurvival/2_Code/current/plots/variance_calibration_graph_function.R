@@ -1,6 +1,6 @@
 plot_variance_calibration <- function(
     results_df,
-    title = "PPE Variance Calibration: True Dispersion vs Mean Estimated SE",
+    title = "PPE Variance Calibration: Estimation Error SD vs Mean Estimated SE",
     x_lab = "Proportion of Cohort Experiencing Cancer Death vs Non-Cancer Death",
     y_lab = "Standard Error / Standard Deviation",
     followup_lab = "Follow-up"
@@ -33,7 +33,7 @@ plot_variance_calibration <- function(
       metric_label = factor(
         metric,
         levels = c("estimation_error_sd", "mean_se"),
-        labels = c("Empirical Dispersion (True SD)", "Mean Estimated SE (Predicted)")
+        labels = c("SD of Estimator Error", "Mean Estimated SE (Predicted)")
       )
     )
   
