@@ -1,12 +1,12 @@
-plot_dispersion <- function(
+plot_mean_se <- function(
     results_df,
-    title = "PPE Empirical Dispersion (SD)",
+    title = "PPE Mean Estimated Standard Error",
     x_lab = "Proportion of Cohort Experiencing Cancer Death vs Non-Cancer Death",
-    y_lab = "Empirical Dispersion (SD of Point Estimates)",
+    y_lab = "Mean Estimated SE",
     followup_lab = "Follow-up"
 ) {
   
-  required_cols <- c("time_t", "pct_cancer", "dispersion")
+  required_cols <- c("time_t", "pct_cancer", "mean_se")
   missing_cols <- setdiff(required_cols, names(results_df))
   
   if (length(missing_cols) > 0) {
@@ -27,7 +27,7 @@ plot_dispersion <- function(
   
   ggplot2::ggplot(
     results_plot_df,
-    ggplot2::aes(x = pct_cancer, y = dispersion)
+    ggplot2::aes(x = pct_cancer, y = mean_se)
   ) +
     ggplot2::geom_point(
       ggplot2::aes(
