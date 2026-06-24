@@ -14,7 +14,7 @@ plot_ppviz_parallel <- function(
     seed = 54321
 ) {
   
-  required_packages <- c("survival", "relsurv", "future", "future.apply")
+  required_packages <- c("survival", "relsurv", "future", "future.apply", "arrow")
   missing_packages <- required_packages[
     !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
   ]
@@ -92,9 +92,22 @@ plot_ppviz_parallel <- function(
     mean(exp(-lambda_scenario * t * risk_scores))
   })
   
+  # Filter out unneeded columns to optimize memory before splitting the data
+  keep_cols <- c("sim_id", "observed_time_days", "status", "age_days", "sex", "year_diagnosis")
+  all_simulated_data <- all_simulated_data[, ..keep_cols]
+  
   unique_sims <- unique(all_simulated_data$sim_id)
   n_sims <- length(unique_sims)
   sim_list <- split(all_simulated_data, all_simulated_data$sim_id)
+  
+  # Remove unneeded objects so they aren't captured by the global environment
+  rm(all_simulated_data, risk_scores, metrics_data)
+  
+  # release RAM immediately (Garbage Collection)
+  gc()
+  
+  # Raise global memory transfer threshold to 4 GiB
+  options(future.globals.maxSize = 4 * 1024^3)
   
   old_plan <- future::plan()
   on.exit(future::plan(future::sequential), add = TRUE)
