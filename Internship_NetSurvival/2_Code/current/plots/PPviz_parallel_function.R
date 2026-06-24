@@ -10,7 +10,7 @@ plot_ppviz_parallel <- function(
     n_plot = 20,
     t_by = 0.1,
     use_parallel = TRUE,
-    workers = max(1, future::availableCores() - 1),
+    workers = max(1, future::availableCores() - 2),
     seed = 54321
 ) {
   
