@@ -17,30 +17,32 @@ source(here("current", "functions", "nessie.R"))
 
 # Global Parameters
 n_patients <- 2000
-age_option <- "Luo"
+age_option <- "A"
 beta_age <- 0.02
 beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 1000
+N_files <- 100
 
 
 #lambdas_to_run <- c(0.018) 
 
-lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
+lambdas_to_run <- c(0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.003, 0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30)
+
+#lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
 # Calculate max_time
- cat("Calculating dynamic max_time based on population expected survival...\n")
- max_time <- determine_max_time(
-   n_patients = n_patients,
-   age_option = age_option,
-   prop_female = prop_female,
-   year.start_min = year.start_min,
-   year.start_max = year.start_max
- )
+ # cat("Calculating dynamic max_time based on population expected survival...\n")
+ # max_time <- determine_max_time(
+ #   n_patients = n_patients,
+ #   age_option = age_option,
+ #   prop_female = prop_female,
+ #   year.start_min = year.start_min,
+ #   year.start_max = year.start_max
+ # )
 
-#max_time <- 7
+max_time <- 12
 
 max_time_days <- max_time * 365.241
 cat(sprintf("=> Dynamic max_time set to: %d years\n\n", max_time))
@@ -52,7 +54,7 @@ scenarios <- calibrate_censoring_grid(
    age_option = age_option,
   beta_age = beta_age,
    target_censoring = 0.30, # target random loss to follow-up
-   n_pilots = 2        # Adjust based on variance
+   n_pilots = 1        # Adjust based on variance
  )
 
 # Display the calculated scenarios to verify before main execution

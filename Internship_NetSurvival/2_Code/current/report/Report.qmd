@@ -120,7 +120,7 @@ plot_estimation_error_sd(results_df)
 plot_mean_se(results_df)
 ```
 
-```{r fig-variance-calibration, fig.width=9, fig.height=6, fig.cap="Direct comparison of empirical SD of the estimation error (bias) versus mean estimated SE."}
+```{r fig-variance-calibration, fig.width=9, fig.height=6, fig.cap="Ratio of mean model estimated SE to empirical SD of the estimation error (bias)"}
 plot_variance_calibration(results_df)
 ```
 
