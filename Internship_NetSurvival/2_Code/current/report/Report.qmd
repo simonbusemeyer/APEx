@@ -1,5 +1,6 @@
 ---
-title: "PPE Performace Report"
+title: "PPE Performance Report"
+date: "`r Sys.Date()`"
 format:
   html:
     toc: true
@@ -30,6 +31,32 @@ results_df <- read_csv(here("current", "outputs", "tables", "final_results_compl
 
 save_dir <- here("current", "outputs", "plots_data")
 
+# Extract global parameters dynamically from main_batch.R
+batch_code <- readLines(here("current", "main_batch.R"))
+
+get_param <- function(param_name, code = batch_code) {
+  line <- code[str_detect(code, paste0("^", param_name, "\\s*<-"))]
+  if(length(line) > 0) {
+    # Extract everything after <- and strip comments/whitespace
+    val <- str_match(line, paste0("^", param_name, "\\s*<-\\s*([^#]+)"))[2]
+    return(str_trim(val))
+  }
+  return("Not found")
+}
+
+# Store parameters in a list
+params_list <- list(
+  n_patients     = get_param("n_patients"),
+  age_option     = get_param("age_option"),
+  beta_age       = get_param("beta_age"),
+  beta_sex       = get_param("beta_sex"),
+  year_min       = get_param("year.start_min"),
+  year_max       = get_param("year.start_max"),
+  prop_female    = get_param("prop_female"),
+  N_files        = get_param("N_files"),
+  max_time       = get_param("max_time")
+)
+
 # Check if the generated data already exists
 generated_files <- list.files(save_dir, pattern = "^ppviz_data_lambda_.*\\.rds$")
 
@@ -40,6 +67,18 @@ if (length(generated_files) == 0) {
   message("Pre-computed data already exists. Skipping pre-computation step.")
 }
 ```
+## Simulation Configuration
+
+> **Note:** This report reflects the performance metrics evaluated for the following simulation configuration:
+
+* **Number of Patients ($N$):** `r params_list$n_patients`
+* **Simulated Cohorts (Files):** `r params_list$N_files`
+* **Follow-up Cutoff (Years):** `r params_list$max_time` years
+* **Age Distribution Cohort:** `r params_list$age_option`
+* **Beta Coefficients:** * Age ($\beta_{age}$): `r params_list$beta_age`
+    * Sex ($\beta_{sex}$): `r params_list$beta_sex`
+* **Inclusion Window:** `r params_list$year_min` to `r params_list$year_max`
+* **Female Proportion:** `r params_list$prop_female`
 
 ## Empirical Coverage
 
@@ -81,7 +120,7 @@ plot_estimation_error_sd(results_df)
 plot_mean_se(results_df)
 ```
 
-```{r fig-variance-calibration, fig.width=9, fig.height=6, fig.cap="Direct comparison of true empirical dispersion versus mean estimated SE."}
+```{r fig-variance-calibration, fig.width=9, fig.height=6, fig.cap="Direct comparison of empirical SD of the estimation error (bias) versus mean estimated SE."}
 plot_variance_calibration(results_df)
 ```
 
