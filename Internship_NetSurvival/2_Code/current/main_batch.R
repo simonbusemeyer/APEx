@@ -31,16 +31,16 @@ N_files <- 1000
 lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
 # Calculate max_time
-# cat("Calculating dynamic max_time based on population expected survival...\n")
-# max_time <- determine_max_time(
-#   n_patients = n_patients,
-#   age_option = age_option,
-#   prop_female = prop_female,
-#   year.start_min = year.start_min,
-#   year.start_max = year.start_max
-# )
+ cat("Calculating dynamic max_time based on population expected survival...\n")
+ max_time <- determine_max_time(
+   n_patients = n_patients,
+   age_option = age_option,
+   prop_female = prop_female,
+   year.start_min = year.start_min,
+   year.start_max = year.start_max
+ )
 
-max_time <- 7
+#max_time <- 7
 
 max_time_days <- max_time * 365.241
 cat(sprintf("=> Dynamic max_time set to: %d years\n\n", max_time))

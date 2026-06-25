@@ -42,7 +42,7 @@ determine_max_time <- function(n_patients, age_option, prop_female, year.start_m
   
   # 5. Extract and truncate
   nessie_matrix <- nessie_out$mata
-  calc_max_time <- trunc(min(nessie_matrix[, "c.exp.surv"], na.rm = TRUE))
+  calc_max_time <- ceiling((mean(nessie_matrix[, "c.exp.surv"], na.rm = TRUE))/2)
   
   return(calc_max_time)
 }
