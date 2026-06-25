@@ -1,12 +1,12 @@
 plot_variance_calibration <- function(
     results_df,
-    title = "PPE Variance Calibration: Estimation Error SD vs Mean Estimated SE",
+    title = "PPE Variance Calibration: Mean Estimated SE to Estimation Error SD Ratio",
     x_lab = "Proportion of Cohort Experiencing Cancer Death vs Non-Cancer Death",
-    y_lab = "Standard Error / Standard Deviation",
+    y_lab = "Standard Error / Standard Deviation (Ratio)",
     followup_lab = "Follow-up"
 ) {
   
-  required_cols <- c("time_t", "pct_cancer", "estimation_error_sd", "mean_se")
+  required_cols <- c("time_t", "pct_cancer", "se_calibration_ratio")
   missing_cols <- setdiff(required_cols, names(results_df))
   
   if (length(missing_cols) > 0) {
@@ -23,31 +23,23 @@ plot_variance_calibration <- function(
         levels = sort(unique(time_t)),
         labels = paste("Year", sort(unique(time_t)))
       )
-    ) %>%
-    tidyr::pivot_longer(
-      cols = c("estimation_error_sd", "mean_se"),
-      names_to = "metric",
-      values_to = "value"
-    ) %>%
-    dplyr::mutate(
-      metric_label = factor(
-        metric,
-        levels = c("estimation_error_sd", "mean_se"),
-        labels = c("SD of Estimator Error", "Mean Estimated SE (Predicted)")
-      )
-    )
+    ) 
+  
+  num_shapes <- length(unique(results_plot_df$time_t_factor))
   
   ggplot2::ggplot(
     results_plot_df,
-    ggplot2::aes(x = pct_cancer, y = value, color = time_t_factor)
+    ggplot2::aes(x = pct_cancer, y = se_calibration_ratio)
   ) +
     ggplot2::geom_point(
-      ggplot2::aes(shape = metric_label),
+      ggplot2::aes(
+        color = time_t_factor,
+        shape = time_t_factor
+      ),
       size = 3
     ) +
     ggplot2::scale_color_viridis_d(option = "plasma", end = 0.8, name = followup_lab) +
-    ggplot2::scale_shape_manual(values = c(16, 17), name = "Metric") +
-    ggplot2::scale_linetype_manual(values = c("solid", "dashed"), name = "Metric") +
+    ggplot2::scale_shape_manual(values = 0:(num_shapes - 1), name = followup_lab) +
     ggplot2::scale_x_continuous(
       labels = scales::percent_format(accuracy = 1)
     ) +

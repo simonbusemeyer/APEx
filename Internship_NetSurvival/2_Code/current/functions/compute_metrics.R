@@ -17,6 +17,9 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val) {
     ecr           = mean(covered, na.rm = TRUE)
   ), by = .(time_t = time)]
   
+  metrics[, se_calibration_ratio :=
+            mean_se / estimation_error_sd]
+  
   # 3. Assign global scenario averages in place
   metrics[, `:=`(
     lambda          = lambda_val,
