@@ -25,6 +25,8 @@ plot_estimate_sd <- function(
       )
     )
   
+  num_shapes <- length(unique(results_plot_df$time_t_factor))
+  
   ggplot2::ggplot(
     results_plot_df,
     ggplot2::aes(x = pct_cancer, y = estimate_sd)
@@ -37,7 +39,7 @@ plot_estimate_sd <- function(
       size = 3
     ) +
     ggplot2::scale_color_viridis_d(option = "plasma", end = 0.8, name = followup_lab) +
-    ggplot2::scale_shape_discrete(name = followup_lab) +
+    ggplot2::scale_shape_manual(values = 0:(num_shapes - 1), name = followup_lab) +
     ggplot2::scale_x_continuous(
       labels = scales::percent_format(accuracy = 1)
     ) +

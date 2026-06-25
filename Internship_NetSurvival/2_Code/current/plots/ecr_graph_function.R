@@ -32,6 +32,8 @@ plot_ecr <- function(
       )
     )
   
+  num_shapes <- length(unique(results_plot_df$time_t_factor))
+  
   ggplot2::ggplot(
     results_plot_df,
     ggplot2::aes(x = pct_cancer, y = ecr)
@@ -52,7 +54,7 @@ plot_ecr <- function(
       size = 3
     ) +
     ggplot2::scale_color_viridis_d(option = "plasma", end = 0.8) +
-    ggplot2::scale_shape_discrete() +
+    ggplot2::scale_shape_manual(values = 0:(num_shapes - 1), name = followup_lab) +
     ggplot2::scale_linetype_manual(
       values = stats::setNames("dashed", target_label)
     ) +
