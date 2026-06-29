@@ -1,4 +1,4 @@
-# Calculate the Coefficient of Variation for the IQR (relative dispersion)
+# Calculate the Coefficient of Variation for the IQR
 metrics <- metrics %>%
   mutate(iqr_cv_overall = iqr_n_at_risk / med_n_at_risk)
 

@@ -1,6 +1,6 @@
 library(tidyr)
 
-# Pivot all mean/sd columns for the three age groups into a unified long format
+# long format
 age_strata_long <- metrics %>%
   select(time_t, lambda, 
          mean_n_at_risk_u65, sd_n_at_risk_u65,
@@ -12,7 +12,7 @@ age_strata_long <- metrics %>%
   mutate(age_group = factor(age_group, levels = c("u65", "65_85", "o85"), 
                             labels = c("< 65", "65 - 85", "85+")))
 
-# Filter for a subset of lambdas to prevent the grid from being too dense
+# Filter for a subset
 lambdas_to_plot <- c(0.004, 0.01, 0.055, 0.30)
 
 ggplot(age_strata_long %>% filter(lambda %in% lambdas_to_plot), 
@@ -27,5 +27,5 @@ ggplot(age_strata_long %>% filter(lambda %in% lambdas_to_plot),
   labs(title = "Stratified Attrition Trajectories (Mean ± 1 SD)",
        x = "Time (Years)",
        y = "Patients at Risk") +
-  theme(legend.position = "none", # Legend is redundant due to row facets
+  theme(legend.position = "none",
         strip.background = element_rect(fill = "grey95"))

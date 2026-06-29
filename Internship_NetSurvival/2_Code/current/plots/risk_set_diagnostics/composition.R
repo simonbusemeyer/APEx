@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 
-# 1. Filter for a specific horizon (e.g., 7 years)
+# 1. Filter for a specific follow up horizon
 plot_composition <- final_results %>%
   filter(time_t == 7) %>%
   select(lambda, mean_n_at_risk, mean_cum_cancer, mean_cum_other, mean_cum_censored) %>%
@@ -26,7 +26,7 @@ ggplot(plot_composition, aes(x = as.factor(lambda), y = Count, fill = Status)) +
 
 
 
-# Pivot the cumulative events into long format
+# long format
 events_long <- metrics %>%
   select(time_t, lambda, mean_n_at_risk, mean_cum_cancer, mean_cum_other, mean_cum_censored) %>%
   rename(
@@ -36,7 +36,7 @@ events_long <- metrics %>%
     `Censored` = mean_cum_censored
   ) %>%
   pivot_longer(cols = -c(time_t, lambda), names_to = "Status", values_to = "Count") %>%
-  # Order the factors for a logical stack
+
   mutate(Status = factor(Status, levels = c("Still at Risk", "Censored", "Other Deaths", "Cancer Deaths")))
 
 ggplot(events_long, aes(x = time_t, y = Count, fill = Status)) +

@@ -1,4 +1,4 @@
-# Plot age group depletion across time for a specific lambda (e.g., your baseline 0.018)
+# Plot age group depletion for a specific lambda
 plot_age <- final_results %>%
   filter(lambda == 0.3) %>%
   select(time_t, mean_n_at_risk_u65, mean_n_at_risk_65_85, mean_n_at_risk_o85) %>%
@@ -21,7 +21,6 @@ ggplot(plot_age, aes(x = time_t, y = Mean_At_Risk, color = Age_Group, group = Ag
   )
 
 
-# Pivot the at-risk means and SDs into long format
 risk_data_long <- metrics %>%
   select(time_t, lambda, 
          `<65_mean` = mean_n_at_risk_u65, `<65_sd` = sd_n_at_risk_u65,

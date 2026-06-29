@@ -1,9 +1,9 @@
 ggplot(metrics, aes(x = time_t)) +
-  # Parametric Spread (Mean +/- SD)
+  # Parametric Spread
   geom_ribbon(aes(ymin = pmax(0, mean_n_at_risk_o85 - sd_n_at_risk_o85), 
                   ymax = mean_n_at_risk_o85 + sd_n_at_risk_o85), 
               fill = "#e74c3c", alpha = 0.2) +
-  # Non-Parametric Spread (Median +/- approximated IQR)
+  # Non-Parametric Spread
   geom_ribbon(aes(ymin = pmax(0, med_n_at_risk_o85 - (iqr_n_at_risk_o85/2)), 
                   ymax = med_n_at_risk_o85 + (iqr_n_at_risk_o85/2)), 
               fill = "#3498db", alpha = 0.4) +

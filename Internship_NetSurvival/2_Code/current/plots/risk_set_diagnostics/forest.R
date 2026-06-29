@@ -1,7 +1,7 @@
 library(ggplot2)
 library(dplyr)
 
-# Filter for a critical time point (e.g., 7 years)
+# Filter for a time point
 metrics_t7 <- metrics %>%
   filter(time_t == 7)
 
@@ -10,7 +10,7 @@ ggplot(metrics_t7, aes(x = factor(lambda), y = med_n_at_risk_o85)) +
   geom_pointrange(aes(ymin = pmax(0, med_n_at_risk_o85 - (iqr_n_at_risk_o85/2)), 
                       ymax = med_n_at_risk_o85 + (iqr_n_at_risk_o85/2)),
                   color = "#2c3e50", linewidth = 1, fatten = 4) +
-  coord_flip() + # Flip for easier reading of lambda scenarios
+  coord_flip() +
   theme_minimal() +
   labs(title = "Risk Set Size at 7 Years by Background Hazard",
        subtitle = "Point = Median | Error Bars = Appoximated IQR across 1000 simulations",

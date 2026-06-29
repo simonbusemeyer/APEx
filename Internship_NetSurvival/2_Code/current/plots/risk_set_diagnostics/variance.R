@@ -1,4 +1,4 @@
-# Focus on a specific horizon (e.g., 7 years) to see how lambda impacts the variance of the risk set
+# Focus on a specific follow-up time
 plot_variance <- final_results %>%
   filter(time_t == 7) 
 
@@ -10,7 +10,7 @@ ggplot(plot_variance, aes(x = lambda)) +
   # Mean Line
   geom_line(aes(y = mean_n_at_risk), color = "blue", linewidth = 1) +
   theme_minimal() +
-  scale_x_log10() + # Log scale usually helps when lambdas are spread from 0.0001 to 0.30
+  scale_x_log10() +
   labs(
     title = "Overall Risk Set Size at 7 Years across \u03BB",
     subtitle = "Solid line: Mean | Ribbon: Interquartile Range (IQR)",

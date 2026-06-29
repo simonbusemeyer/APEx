@@ -1,3 +1,4 @@
+# Coefficient of Variation (CV)
 metrics_cv <- metrics %>%
   mutate(
     cv_at_risk_overall = sd_n_at_risk / mean_n_at_risk,
