@@ -6,7 +6,6 @@ plot_mean_se_by_age <- function(
     followup_lab = "Follow-up"
 ) {
   
-  # Added pp_age_class to required columns
   required_cols <- c("time_t", "pct_cancer", "mean_se", "pp_age_class")
   missing_cols <- setdiff(required_cols, names(results_df))
   
@@ -17,7 +16,7 @@ plot_mean_se_by_age <- function(
     )
   }
   
-  results_plot_df <- results_df %>%
+  results_plot_df <- results_df |> 
     dplyr::mutate(
       time_t_factor = factor(
         time_t,
@@ -39,23 +38,12 @@ plot_mean_se_by_age <- function(
       ),
       size = 3
     ) +
-    # Facet by age class to create comparison panels
     ggplot2::facet_wrap(~ pp_age_class, scales = "fixed") +
-    
     ggplot2::scale_color_viridis_d(option = "plasma", end = 0.8) +
     ggplot2::scale_shape_manual(values = 0:(num_shapes - 1), name = followup_lab) +
-    ggplot2::scale_linetype_manual(
-      values = c("No Mean Estimated SE" = "dashed")
-    ) +
     ggplot2::scale_x_continuous(
       labels = scales::percent_format(accuracy = 1)
-      # ) +
-      # ggplot2::scale_y_continuous(
-      #   breaks = seq(-0.2, 0.2, by = 0.1)
     ) +
-    # ggplot2::coord_cartesian( 
-    #   ylim = c(-0.02, 0.02)
-    # ) +
     ggplot2::labs(
       title = title,
       x = x_lab,
@@ -73,7 +61,6 @@ plot_mean_se_by_age <- function(
       legend.text  = ggplot2::element_text(size = 14),
       legend.position = "bottom",
       panel.grid.minor = ggplot2::element_blank(),
-      # Add styling for the facet labels
       strip.background = ggplot2::element_rect(fill = "grey90", color = NA),
       strip.text = ggplot2::element_text(face = "bold", size = 12)
     )

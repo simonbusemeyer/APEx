@@ -23,7 +23,7 @@ beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 50
+N_files <- 10
 
 
 #lambdas_to_run <- c(0.018, 0.02) 
@@ -56,7 +56,7 @@ scenarios <- calibrate_censoring_grid(
    age_option = age_option,
   beta_age = beta_age,
    target_censoring = 0.30, # target random loss to follow-up
-   n_pilots = 1        # Adjust based on variance
+   n_pilots = 3        # Adjust based on variance
  )
 
 # Display the calculated scenarios to verify before main execution
