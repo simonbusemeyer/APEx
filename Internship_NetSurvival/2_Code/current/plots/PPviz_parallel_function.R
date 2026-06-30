@@ -167,7 +167,7 @@ plot_ppviz_parallel <- function(
     0,
     type = "n",
     xlim = c(0, max_time),
-    ylim = c(0.9, 1.0),
+    ylim = c(0.8, 1.0),
     xlab = "Time since diagnosis (Years)",
     ylab = "Net Survival Probability",
     main = paste0(

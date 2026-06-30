@@ -1,4 +1,4 @@
-plot_variance_calibration <- function(
+plot_variance_calibration_by_age <- function(
     results_df,
     title = "PPE Variance Calibration: Mean Estimated SE to Estimation Error SD Ratio",
     x_lab = "Proportion of Cohort Experiencing Cancer Death vs Non-Cancer Death",

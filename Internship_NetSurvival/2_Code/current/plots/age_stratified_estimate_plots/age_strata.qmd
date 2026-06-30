@@ -1,0 +1,118 @@
+---
+title: "age_strata"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(scales)
+library(here)
+
+source(here("current", "plots", "age_stratified_estimate_plots", "bias_age_strata.R"))
+source(here("current", "plots", "age_stratified_estimate_plots", "ecr_age_strata.R"))
+source(here("current", "plots", "age_stratified_estimate_plots", "mean_se_age_strata.R"))
+source(here("current", "plots", "age_stratified_estimate_plots", "estimate_sd_age_strata.R"))
+source(here("current", "plots", "age_stratified_estimate_plots", "variance_calibration_age_strata.R"))
+source(here("current", "plots", "age_stratified_estimate_plots", "cancer_deaths_age_strata.R"))
+
+
+source(here("current", "plots", "age_stratified_estimate_plots", "PPviz_parallel_function_age_strata.R"))
+
+
+
+results_df <- read_csv(here("current", "outputs", "tables", "final_results_complete.csv"))
+
+
+```
+
+```{r}
+plot_bias_by_age(
+  results_df   = results_df,
+  title        = "PPE Bias Under Competing Risks by Age Class",
+  followup_lab = "Follow-up"
+)
+
+#print(bias_plot)
+```
+
+```{r}
+plot_ecr_by_age(
+  results_df   = results_df,
+  title        = "PPE ECR Under Competing Risks by Age Class",
+  followup_lab = "Follow-up"
+)
+
+#print(bias_plot)
+```
+
+```{r}
+plot_mean_se_by_age(
+  results_df   = results_df,
+  title        = "PPE Mean Estimated SE Under Competing Risks by Age Class",
+  followup_lab = "Follow-up"
+)
+```
+
+```{r}
+plot_estimate_sd_by_age(
+  results_df   = results_df,
+  title        = "PPE Empirical Dispersion (Estimate SD) Under Competing Risks by Age Class",
+  followup_lab = "Follow-up"
+)
+```
+
+```{r}
+plot_se_calibration_ratio_by_age(
+  results_df   = results_df,
+  title        = "PPE Empirical Dispersion (Estimate SD) Under Competing Risks by Age Class",
+  followup_lab = "Follow-up"
+)
+```
+
+```{r}
+plot_cum_cancer_by_age(
+  results_df   = results_df,
+  title        = "Cumulative Cancer Deaths by Age Class",
+  followup_lab = "Follow-up"
+)
+```
+
+## Pohar-Perme Visualization by Lambda Scenario age strata-specific overlay
+
+```{r}
+#| label: ppviz-age-strata-precompute
+#| include: false
+
+save_dir <- here("current", "outputs", "plots_data_age_strata")
+generated_files <- list.files(save_dir, pattern = "^ppviz_age_strata_lambda_.*\\.rds$")
+
+if (length(generated_files) == 0) {
+  message("Pre-computed plots not found. Running parallel pre-computation...")
+  source(here("current", "plots", "age_stratified_estimate_plots", "precompute_viz_data_age_strata.R")) 
+} else {
+  message("Pre-computed data already exists. Skipping pre-computation step.")
+}
+```
+
+```{r}
+#| label: fig-ppviz-age-strata-all-lambdas
+#| fig.width: 9
+#| fig.height: 6
+#| fig.cap: "Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario."
+#| layout-ncol: 1
+
+target_dir <- here("current", "outputs", "plots_data_age_strata")
+plot_files <- sort(list.files(target_dir, pattern = "^ppviz_age_strata_lambda_.*\\.rds$", full.names = TRUE))
+
+if (length(plot_files) == 0) {
+  stop("Error: No pre-computed .rds plot files found in ", target_dir)
+}
+
+for (p_file in plot_files) {
+  p_data <- readRDS(p_file)
+  
+  # Extract and print the ggplot object saved during pre-computation
+  print(p_data$plot_obj)
+}
+```
+
