@@ -16,19 +16,21 @@ source(here("current", "functions", "censoring_calibration.R"))
 source(here("current", "functions", "nessie.R"))
 
 # Global Parameters
-n_patients <- 3000
+n_patients <- 2000
 age_option <- "Luo"
 beta_age <- 0.02
 beta_sex <- 0
 year.start_min <- 2008
 year.start_max <- 2010
 prop_female <- 0
-N_files <- 500
+N_files <- 50
 
 
-#lambdas_to_run <- c(0.018) 
+#lambdas_to_run <- c(0.018, 0.02) 
+lambdas_to_run <- c(0.0001, 0.0005, 0.001, 0.003, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.055, 0.10)
 
-lambdas_to_run <- c(0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.003, 0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30)
+
+#lambdas_to_run <- c(0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.003, 0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30)
 
 #lambdas_to_run <- c(0.004, 0.005, 0.007, 0.01, 0.014, 0.019, 0.03, 0.04, 0.055, 0.07, 0.10, 0.30) # use for Luo/LuoTrunc
 
@@ -54,7 +56,7 @@ scenarios <- calibrate_censoring_grid(
    age_option = age_option,
   beta_age = beta_age,
    target_censoring = 0.30, # target random loss to follow-up
-   n_pilots = 2        # Adjust based on variance
+   n_pilots = 1        # Adjust based on variance
  )
 
 # Display the calculated scenarios to verify before main execution

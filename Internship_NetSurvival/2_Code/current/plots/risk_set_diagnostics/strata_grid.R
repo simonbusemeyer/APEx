@@ -13,7 +13,7 @@ age_strata_long <- metrics %>%
                             labels = c("< 65", "65 - 85", "85+")))
 
 # Filter for a subset
-lambdas_to_plot <- c(0.004, 0.01, 0.055, 0.30)
+lambdas_to_plot <- c(0.0005, 0.005, 0.019, 0.055, 0.10)
 
 ggplot(age_strata_long %>% filter(lambda %in% lambdas_to_plot), 
        aes(x = time_t)) +
@@ -29,3 +29,7 @@ ggplot(age_strata_long %>% filter(lambda %in% lambdas_to_plot),
        y = "Patients at Risk") +
   theme(legend.position = "none",
         strip.background = element_rect(fill = "grey95"))
+
+
+
+

@@ -140,6 +140,10 @@ analyze_one <- function(df, lambda, beta_age, max_time) {times_years <- sort(uni
   diag_wide$cum_cancer <- diag_wide$cum_cancer_u65 + diag_wide$cum_cancer_65_85 + diag_wide$cum_cancer_o85
   diag_wide$cum_censored <- diag_wide$cum_censored_u65 + diag_wide$cum_censored_65_85 + diag_wide$cum_censored_o85
   diag_wide$cum_other    <- diag_wide$cum_other_u65 + diag_wide$cum_other_65_85 + diag_wide$cum_other_o85
+  diag_wide$n_deaths_cancer <- diag_wide$n_deaths_cancer_u65 + diag_wide$n_deaths_cancer_65_85 + diag_wide$n_deaths_cancer_o85
+  diag_wide$n_deaths_other  <- diag_wide$n_deaths_other_u65 + diag_wide$n_deaths_other_65_85 + diag_wide$n_deaths_other_o85
+  diag_wide$pct_cancer      <- diag_wide$n_deaths_cancer / (diag_wide$n_deaths_cancer + diag_wide$n_deaths_other)
+  diag_wide$cens_rate       <- mean(df$status == 0)
   
   # merge estimates and diagnostics
   res <- merge(
