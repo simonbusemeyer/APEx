@@ -15,7 +15,7 @@ analyze_one <- function(df, lambda, beta_age, max_time) {times_years <- sort(uni
   
   # 2. Fit the Pohar-Perme estimator
   pp_fit <- rs.surv(
-    Surv(observed_time*365.241, status) ~ 1, 
+    Surv(observed_time*365.241, status) ~ 1, #age class ^ <65; >=65
     data = df, 
     ratetable = survexp.us, 
     rmap = list(age = age * 365.241, sex = sex, year = year_diagnosis), 
