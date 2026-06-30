@@ -230,6 +230,7 @@ plot_ppviz_parallel <- function(
     #   ggplot2::aes(x = time, ymin = lower, ymax = upper, fill = age_group),
     #   alpha = 0.3
     # ) +
+    # Confidence Interval Ribbons
     # Mean PP lines
     ggplot2::geom_step(
       data = df_mean,
