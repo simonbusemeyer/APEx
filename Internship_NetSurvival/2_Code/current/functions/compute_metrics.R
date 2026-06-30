@@ -58,7 +58,9 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val) {
     med_cum_other       = median(cum_other, na.rm = TRUE),
     iqr_cum_other       = IQR(cum_other, na.rm = TRUE)
     
-  ), by = .(time_t = time)]
+  ), by = .(
+    pp_age_class,
+    time_t = time)]
   
   metrics[, se_calibration_ratio :=
             mean_se / estimation_error_sd]
