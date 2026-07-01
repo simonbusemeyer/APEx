@@ -14,6 +14,12 @@ source(here("current", "plots", "age_stratified_estimate_plots", "mean_se_age_st
 source(here("current", "plots", "age_stratified_estimate_plots", "estimate_sd_age_strata.R"))
 source(here("current", "plots", "age_stratified_estimate_plots", "variance_calibration_age_strata.R"))
 source(here("current", "plots", "age_stratified_estimate_plots", "cancer_deaths_age_strata.R"))
+source(here("current", "plots", "final_report", "cum_cancer_prop_age_strata.R"))
+source(here("current", "plots", "final_report", "n_at_risk_prop_age_strata.R"))
+source(here("current", "plots", "final_report", "cum_total_deaths_prop_age_strata.R"))
+source(here("current", "plots", "final_report", "cum_other_prop_age_strata.R"))
+
+
 
 
 source(here("current", "plots", "age_stratified_estimate_plots", "PPviz_parallel_function_age_strata.R"))
@@ -116,3 +122,19 @@ for (p_file in plot_files) {
 }
 ```
 
+```{r}
+plot_cum_cancer_prop_by_age(results_df)
+```
+
+```{r}
+plot_n_at_risk_prop_by_age(results_df)
+```
+
+```{r}
+plot_cum_total_deaths_prop_by_age(results_df)
+```
+
+```{r}
+plot_cum_other_prop_by_age(results_df)
+```
+)
