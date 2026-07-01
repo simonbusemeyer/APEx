@@ -21,6 +21,7 @@ compute_metrics <- function(results_list, lambda_val, borne_a_val) {
     n_deaths_other      = mean(n_deaths_other, na.rm = TRUE),
     
     # Risk-set diagnostics
+    mean_n_patients        = mean(n_patients, na.rm = TRUE),
     mean_n_at_risk         = mean(n_at_risk, na.rm = TRUE),
     sd_n_at_risk           = sd(n_at_risk, na.rm = TRUE),
     med_n_at_risk          = median(n_at_risk, na.rm = TRUE),
