@@ -14,19 +14,28 @@ source(here("current", "plots", "age_stratified_estimate_plots", "mean_se_age_st
 source(here("current", "plots", "age_stratified_estimate_plots", "estimate_sd_age_strata.R"))
 source(here("current", "plots", "age_stratified_estimate_plots", "variance_calibration_age_strata.R"))
 source(here("current", "plots", "age_stratified_estimate_plots", "cancer_deaths_age_strata.R"))
+
+# Cumulative Representations by Age Strata(proportion)
 source(here("current", "plots", "final_report", "cum_cancer_prop_age_strata.R"))
 source(here("current", "plots", "final_report", "n_at_risk_prop_age_strata.R"))
 source(here("current", "plots", "final_report", "cum_total_deaths_prop_age_strata.R"))
 source(here("current", "plots", "final_report", "cum_other_prop_age_strata.R"))
 
+## # Cumulative Representations by Age Strata (absolute)
+source(here("current", "plots", "final_report", "cum_cancer_age_strata.R"))
+source(here("current", "plots", "final_report", "n_at_risk_age_strata.R"))
+source(here("current", "plots", "final_report", "cum_total_deaths_age_strata.R"))
+source(here("current", "plots", "final_report", "cum_other_age_strata.R"))
 
 
 
 source(here("current", "plots", "age_stratified_estimate_plots", "PPviz_parallel_function_age_strata.R"))
 
+# 1. Specify a vector of target lambda scenarios
+target_lambdas <- c(0.001, 0.003, 0.007, 0.014, 0.055) 
 
-
-results_df <- read_csv(here("current", "outputs", "tables", "final_results_complete.csv"))
+results_df <- read_csv(here("current", "outputs", "tables", "final_results_complete.csv")) %>%
+  dplyr::mutate(lambda = as.numeric(lambda))
 
 
 ```
@@ -75,14 +84,6 @@ plot_se_calibration_ratio_by_age(
 )
 ```
 
-```{r}
-# plot_cum_cancer_by_age(
-#   results_df   = results_df,
-#   title        = "Cumulative Cancer Deaths by Age Class",
-#   followup_lab = "Follow-up"
-# )
-```
-
 ## Pohar-Perme Visualization by Lambda Scenario age strata-specific overlay
 
 ```{r}
@@ -90,40 +91,54 @@ plot_se_calibration_ratio_by_age(
 #| include: false
 
 save_dir <- here("current", "outputs", "plots_data_age_strata")
-generated_files <- list.files(save_dir, pattern = "^ppviz_age_strata_lambda_.*\\.rds$")
 
-if (length(generated_files) == 0) {
-  message("Pre-computed plots not found. Running parallel pre-computation...")
+# Build exact filenames without padding
+target_filenames <- paste0("ppviz_age_strata_lambda_", as.character(target_lambdas), ".rds")
+target_file_paths <- file.path(save_dir, target_filenames)
+
+missing_files <- target_lambdas[!file.exists(target_file_paths)]
+
+if (length(missing_files) > 0) {
+  message("Pre-computed plots missing for lambdas: ", paste(missing_files, collapse = ", "), ". Running pre-computation...")
+  
+  results_df <- results_df %>% 
+    dplyr::filter(lambda %in% target_lambdas)
+  
   source(here("current", "plots", "age_stratified_estimate_plots", "precompute_viz_data_age_strata.R")) 
 } else {
-  message("Pre-computed data already exists. Skipping pre-computation step.")
+  message("Pre-computed data for all targeted lambdas already exists. Skipping pre-computation step.")
 }
 ```
 
 ```{r}
-#| label: fig-ppviz-age-strata-all-lambdas
+#| label: fig-ppviz-age-strata-multiple-lambdas
 #| fig.width: 9
 #| fig.height: 6
-#| fig.cap: "Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario."
+#| fig.cap: "Age-Stratified Pohar-Perme versus theoretical net survival for selected lambda scenarios."
 #| layout-ncol: 1
 
-target_dir <- here("current", "outputs", "plots_data_age_strata")
-plot_files <- sort(list.files(target_dir, pattern = "^ppviz_age_strata_lambda_.*\\.rds$", full.names = TRUE))
-
-if (length(plot_files) == 0) {
-  stop("Error: No pre-computed .rds plot files found in ", target_dir)
-}
-
-for (p_file in plot_files) {
-  p_data <- readRDS(p_file)
+# 4. Loop through the specific file paths you defined above
+for (file_path in target_file_paths) {
+  if (!file.exists(file_path)) {
+    warning("Warning: Pre-computed .rds plot file not found at ", file_path)
+    next # Skip to the next file if one is somehow missing
+  }
   
-  # Extract and print the ggplot object saved during pre-computation
+  p_data <- readRDS(file_path)
+  
+  # Extract and print the ggplot object
   print(p_data$plot_obj)
 }
 ```
 
+
+## Cumulative Representations by Age Strata
 ```{r}
 plot_cum_cancer_prop_by_age(results_df)
+```
+
+```{r}
+plot_cum_cancer_by_age(results_df)
 ```
 
 ```{r}
@@ -131,10 +146,22 @@ plot_n_at_risk_prop_by_age(results_df)
 ```
 
 ```{r}
+plot_n_at_risk_by_age(results_df)
+```
+
+```{r}
 plot_cum_total_deaths_prop_by_age(results_df)
 ```
 
 ```{r}
+plot_cum_total_deaths_by_age(results_df)
+```
+
+```{r}
 plot_cum_other_prop_by_age(results_df)
+```
+
+```{r}
+plot_cum_other_by_age(results_df)
 ```
 )

@@ -18,6 +18,8 @@ plot_cum_cancer_by_age <- function(
   }
   
   results_plot_df <- results_df %>%
+    dplyr::filter(pp_age_class != "Overall") |>
+    
     dplyr::mutate(
       time_t_factor = factor(
         time_t,

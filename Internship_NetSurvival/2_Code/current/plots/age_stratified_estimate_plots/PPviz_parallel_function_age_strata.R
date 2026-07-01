@@ -246,7 +246,7 @@ plot_ppviz_parallel <- function(
     ggplot2::scale_color_manual(values = c("<65" = "#2c728e", ">=65" = "#d55e00")) +
     ggplot2::scale_fill_manual(values = c("<65" = "#2c728e", ">=65" = "#d55e00")) +
     ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-    ggplot2::coord_cartesian(ylim = c(0.8, 1.0)) +
+    ggplot2::coord_cartesian(ylim = c(0.2, 1.0)) +
     ggplot2::labs(
       title = paste0(
         "Net Survival: PP vs Theoretical\n",

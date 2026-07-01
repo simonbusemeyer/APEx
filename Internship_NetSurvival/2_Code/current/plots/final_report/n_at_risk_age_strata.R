@@ -1,12 +1,14 @@
-plot_mean_se_by_age <- function(
+# n_at_risk_age_strata.R
+
+plot_n_at_risk_by_age <- function(
     results_df,
-    title = "PPE Mean Estimated SE Under Competing Risks by Age Class",
+    title = "Patients at Risk by Age Class",
     x_lab = "Proportion of Cohort Experiencing Cancer Death vs Non-Cancer Death",
-    y_lab = "Mean Estimated SE",
+    y_lab = "Number at Risk",
     followup_lab = "Follow-up"
 ) {
   
-  required_cols <- c("time_t", "pct_cancer", "mean_se", "pp_age_class")
+  required_cols <- c("time_t", "pct_cancer", "mean_n_at_risk", "mean_n_patients", "pp_age_class")
   missing_cols <- setdiff(required_cols, names(results_df))
   
   if (length(missing_cols) > 0) {
@@ -17,9 +19,11 @@ plot_mean_se_by_age <- function(
   }
   
   results_plot_df <- results_df |> 
+    # Exclude the Overall strata 
     dplyr::filter(pp_age_class != "Overall") |>
-    
+    # Calculate the proportion on the y-axis
     dplyr::mutate(
+      mean_n_at_risk = mean_n_at_risk,
       time_t_factor = factor(
         time_t,
         levels = sort(unique(time_t)),
@@ -31,7 +35,7 @@ plot_mean_se_by_age <- function(
   
   ggplot2::ggplot(
     results_plot_df,
-    ggplot2::aes(x = pct_cancer, y = mean_se)
+    ggplot2::aes(x = pct_cancer, y = mean_n_at_risk)
   ) +
     ggplot2::geom_point(
       ggplot2::aes(
@@ -45,6 +49,9 @@ plot_mean_se_by_age <- function(
     ggplot2::scale_shape_manual(values = 0:(num_shapes - 1), name = followup_lab) +
     ggplot2::scale_x_continuous(
       labels = scales::percent_format(accuracy = 1)
+    ) +
+    ggplot2::scale_y_continuous(
+      labels = scales::comma
     ) +
     ggplot2::labs(
       title = title,

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -68,10 +68,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="age_strata_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="age_strata_files/libs/quarto-html/anchor.min.js"></script>
 <link href="age_strata_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="age_strata_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="age_strata_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="age_strata_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="age_strata_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="age_strata_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="age_strata_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -105,11 +105,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.2     
+✔ dplyr     1.1.4     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.0
+✔ purrr     1.0.2     
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ✖ dplyr::filter() masks stats::filter()
 ✖ dplyr::lag()    masks stats::lag()
@@ -130,38 +130,56 @@ The following object is masked from 'package:readr':
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>here() starts at C:/Users/simon.busemeyer/Documents/APEx/Internship_NetSurvival/2_Code</code></pre>
+<pre><code>Warning: package 'here' was built under R version 4.3.3</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"bias_age_strata.R"</span>))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"ecr_age_strata.R"</span>))</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"mean_se_age_strata.R"</span>))</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"estimate_sd_age_strata.R"</span>))</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"variance_calibration_age_strata.R"</span>))</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"cancer_deaths_age_strata.R"</span>))</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"PPviz_parallel_function_age_strata.R"</span>))</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>results_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"outputs"</span>, <span class="st">"tables"</span>, <span class="st">"final_results_complete.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Rows: 108 Columns: 44
+<pre><code>here() starts at /Users/simon/Library/CloudStorage/GoogleDrive-simonite410@gmail.com/My Drive/Academic/MPH/APEx/SESSTIM 2/REPO do not modify/APEx REPO/Internship_NetSurvival/2_Code</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"bias_age_strata.R"</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"ecr_age_strata.R"</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"mean_se_age_strata.R"</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"estimate_sd_age_strata.R"</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"variance_calibration_age_strata.R"</span>))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"cancer_deaths_age_strata.R"</span>))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Cumulative Representations by Age Strata(proportion)</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"cum_cancer_prop_age_strata.R"</span>))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"n_at_risk_prop_age_strata.R"</span>))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"cum_total_deaths_prop_age_strata.R"</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"cum_other_prop_age_strata.R"</span>))</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # Cumulative Representations by Age Strata (absolute)</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"cum_cancer_age_strata.R"</span>))</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"n_at_risk_age_strata.R"</span>))</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"cum_total_deaths_age_strata.R"</span>))</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"final_report"</span>, <span class="st">"cum_other_age_strata.R"</span>))</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"plots"</span>, <span class="st">"age_stratified_estimate_plots"</span>, <span class="st">"PPviz_parallel_function_age_strata.R"</span>))</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Specify a vector of target lambda scenarios</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>target_lambdas <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.0001</span>, <span class="fl">0.001</span>, <span class="fl">0.014</span>, <span class="fl">0.055</span>) </span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>results_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"outputs"</span>, <span class="st">"tables"</span>, <span class="st">"final_results_complete.csv"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">lambda =</span> <span class="fu">as.numeric</span>(lambda))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 108 Columns: 37
 ── Column specification ────────────────────────────────────────────────────────
 Delimiter: ","
 chr  (1): pp_age_class
-dbl (43): lambda, borne_a, censoring_rate, pct_cancer, n_deaths_cancer, n_de...
+dbl (36): lambda, borne_a, time_t, censoring_rate, pct_cancer, n_deaths_canc...
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_bias_by_age</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Bias Under Competing Risks by Age Class"</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_bias_by_age</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Bias Under Competing Risks by Age Class"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -169,26 +187,14 @@ dbl (43): lambda, borne_a, censoring_rate, pct_cancer, n_deaths_cancer, n_de...
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(bias_plot)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(bias_plot)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_ecr_by_age</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE ECR Under Competing Risks by Age Class"</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's linetype values.
-No shared levels found between `names(values)` of the manual scale and the
-data's linetype values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
-(`geom_segment()`).
-Removed 1 row containing missing values or values outside the scale range
-(`geom_segment()`).</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_ecr_by_age</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE ECR Under Competing Risks by Age Class"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -196,18 +202,14 @@ Removed 1 row containing missing values or values outside the scale range
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(bias_plot)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(bias_plot)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_mean_se_by_age</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Mean Estimated SE Under Competing Risks by Age Class"</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's linetype values.</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_mean_se_by_age</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Mean Estimated SE Under Competing Risks by Age Class"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -217,15 +219,11 @@ data's linetype values.</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_estimate_sd_by_age</span>(</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Empirical Dispersion (Estimate SD) Under Competing Risks by Age Class"</span>,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's linetype values.</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_estimate_sd_by_age</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Empirical Dispersion (Estimate SD) Under Competing Risks by Age Class"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -235,15 +233,11 @@ data's linetype values.</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_se_calibration_ratio_by_age</span>(</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Empirical Dispersion (Estimate SD) Under Competing Risks by Age Class"</span>,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's linetype values.</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_se_calibration_ratio_by_age</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">results_df   =</span> results_df,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title        =</span> <span class="st">"PPE Empirical Dispersion (Estimate SD) Under Competing Risks by Age Class"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">followup_lab =</span> <span class="st">"Follow-up"</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -252,182 +246,30 @@ data's linetype values.</code></pre>
 </div>
 </div>
 </div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot_cum_cancer_by_age(</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   results_df   = results_df,</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   title        = "Cumulative Cancer Deaths by Age Class",</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   followup_lab = "Follow-up"</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <section id="pohar-perme-visualization-by-lambda-scenario-age-strata-specific-overlay" class="level2">
 <h2 class="anchored" data-anchor-id="pohar-perme-visualization-by-lambda-scenario-age-strata-specific-overlay">Pohar-Perme Visualization by Lambda Scenario age strata-specific overlay</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>target_dir <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"current"</span>, <span class="st">"outputs"</span>, <span class="st">"plots_data_age_strata"</span>)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>plot_files <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">list.files</span>(target_dir, <span class="at">pattern =</span> <span class="st">"^ppviz_age_strata_lambda_.*</span><span class="sc">\\</span><span class="st">.rds$"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(plot_files) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error: No pre-computed .rds plot files found in "</span>, target_dir)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p_file <span class="cf">in</span> plot_files) {</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  p_data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(p_file)</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract and print the ggplot object saved during pre-computation</span></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(p_data<span class="sc">$</span>plot_obj)</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Ignoring unknown labels:
-• fill : "Age Group"</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: No shared levels found between `names(values)` of the manual scale and the
-data's fill values.</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Loop through the specific file paths you defined above</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (file_path <span class="cf">in</span> target_file_paths) {</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(file_path)) {</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Warning: Pre-computed .rds plot file not found at "</span>, file_path)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">next</span> <span class="co"># Skip to the next file if one is somehow missing</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  p_data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(file_path)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract and print the ggplot object</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(p_data<span class="sc">$</span>plot_obj)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="1">
 <div class="quarto-layout-row">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-ppviz-age-strata-multiple-lambdas-1" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-1.png" class="img-fluid figure-img" width="864">
+<div aria-describedby="fig-ppviz-age-strata-multiple-lambdas-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="age_strata_files/figure-html/fig-ppviz-age-strata-multiple-lambdas-1.png" class="img-fluid figure-img" width="864">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-multiple-lambdas-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Age-Stratified Pohar-Perme versus theoretical net survival for selected lambda scenarios.
 </figcaption>
 </figure>
 </div>
@@ -435,13 +277,13 @@ Figure&nbsp;1: Age-Stratified Pohar-Perme versus theoretical net survival by lam
 </div>
 <div class="quarto-layout-row">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-ppviz-age-strata-multiple-lambdas-2" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-2.png" class="img-fluid figure-img" width="864">
+<div aria-describedby="fig-ppviz-age-strata-multiple-lambdas-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="age_strata_files/figure-html/fig-ppviz-age-strata-multiple-lambdas-2.png" class="img-fluid figure-img" width="864">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-multiple-lambdas-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Age-Stratified Pohar-Perme versus theoretical net survival for selected lambda scenarios.
 </figcaption>
 </figure>
 </div>
@@ -449,13 +291,13 @@ Figure&nbsp;2: Age-Stratified Pohar-Perme versus theoretical net survival by lam
 </div>
 <div class="quarto-layout-row">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-ppviz-age-strata-multiple-lambdas-3" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-3.png" class="img-fluid figure-img" width="864">
+<div aria-describedby="fig-ppviz-age-strata-multiple-lambdas-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="age_strata_files/figure-html/fig-ppviz-age-strata-multiple-lambdas-3.png" class="img-fluid figure-img" width="864">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-multiple-lambdas-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Age-Stratified Pohar-Perme versus theoretical net survival for selected lambda scenarios.
 </figcaption>
 </figure>
 </div>
@@ -463,215 +305,103 @@ Figure&nbsp;3: Age-Stratified Pohar-Perme versus theoretical net survival by lam
 </div>
 <div class="quarto-layout-row">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-4" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-ppviz-age-strata-multiple-lambdas-4" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-4.png" class="img-fluid figure-img" width="864">
+<div aria-describedby="fig-ppviz-age-strata-multiple-lambdas-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="age_strata_files/figure-html/fig-ppviz-age-strata-multiple-lambdas-4.png" class="img-fluid figure-img" width="864">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-5" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-5.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-6" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-6-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-6.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-6-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-7" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-7-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-7.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-7-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-8" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-8-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-8.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-8-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-9" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-9-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-9.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-9-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-10" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-10.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-11" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-11.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-12" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-12.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;12: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-13" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-13.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;13: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-14" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-14-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-14.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-14-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;14: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-15" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-15-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-15.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-15-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-16" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-16-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-16.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-16-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;16: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-17" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-17-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-17.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-17-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;17: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
-<div id="fig-ppviz-age-strata-all-lambdas-18" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ppviz-age-strata-all-lambdas-18-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="age_strata_files/figure-html/fig-ppviz-age-strata-all-lambdas-18.png" class="img-fluid figure-img" width="864">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-all-lambdas-18-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;18: Age-Stratified Pohar-Perme versus theoretical net survival by lambda scenario.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ppviz-age-strata-multiple-lambdas-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Age-Stratified Pohar-Perme versus theoretical net survival for selected lambda scenarios.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 </div>
+</section>
+<section id="cumulative-representations-by-age-strata" class="level2">
+<h2 class="anchored" data-anchor-id="cumulative-representations-by-age-strata">Cumulative Representations by Age Strata</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cum_cancer_prop_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cum_cancer_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_n_at_risk_prop_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_n_at_risk_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cum_total_deaths_prop_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cum_total_deaths_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cum_other_prop_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cum_other_by_age</span>(results_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="age_strata_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>)</p>
 </section>
 
 </main>
